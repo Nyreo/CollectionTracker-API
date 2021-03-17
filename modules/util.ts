@@ -1,20 +1,10 @@
 
 /* util.ts */
 
-import { HandlebarsConfig } from 'https://deno.land/x/handlebars/mod.ts'
 import { Base64 } from 'https://deno.land/x/bb64/mod.ts'
 
-import { loginConfig } from './accounts.ts'
+import { loginConfig } from '../interfaces/request_interfaces.ts'
 
-export const handlebarsConfig: HandlebarsConfig = {
-	baseDir: 'views',
-	extname: '.hbs',
-	layoutsDir: 'layouts/',
-	partialsDir: 'partials/',
-	defaultLayout: '',
-	helpers: undefined,
-	compilerOptions: undefined,
-}
 
 export function extractCredentials(token: string): loginConfig {
 	console.log('checkAuth')
@@ -42,17 +32,3 @@ export function saveFile(base64String: string, username: string): void {
 	Base64.fromBase64String(base64Image).toFile(`./static/uploads/${filename}`)
 	console.log('file saved')
 }
-
-// // checks if file exists
-// async function fileExists(path: string): boolean {
-//   try {
-//     const stats = await Deno.lstat(path)
-//     return stats && stats.isFile
-//   } catch(e) {
-//     if (e && e instanceof Deno.errors.NotFound) {
-//       return false
-//     } else {
-//       throw e
-//     }
-//   }
-// }

@@ -5,37 +5,39 @@ import { compare, genSalt, hash } from 'https://deno.land/x/bcrypt@v0.2.4/mod.ts
 
 import db from './db.ts'
 
+import {AccountSchema} from '../interfaces/db_interfaces.ts'
+import { loginConfig, registerConfig } from '../interfaces/request_interfaces.ts'
+
 const saltRounds = 10
 const salt = await genSalt(saltRounds)
 
-export interface loginConfig {
-	username: string
-	password: string
-}
-
-export interface registerConfig {
-	username: string
-	password: string
-	password2?: string
-}
-
 export async function login(credentials: loginConfig) {
-	let sql = `SELECT count(id) AS count FROM accounts WHERE user="${credentials.username}";`
-	let records = await db.query(sql)
-	if(!records[0].count) throw new Error(`username "${credentials.username}" not found`)
-	sql = `SELECT pass FROM accounts WHERE user = "${credentials.username}";`
-	records = await db.query(sql)
-	const valid = await compare(credentials.password, records[0].pass)
-	if(valid === false) throw new Error(`invalid password for account "${credentials.username}"`)
-	return credentials.username
+	
+  const accounts = db.collection<AccountSchema>("accounts");
+  
+  // check user exists
+  const user = await accounts.findOne({username:credentials.username})
+  
+  if(!user) throw new Error("A user with that name does not exist.")
+  else {
+    const pass = user.password
+    const valid = compare(credentials.password, pass);
+
+    if(!valid) throw new Error(`Invalid password for user: ${credentials.username}.`);
+  }
+  return credentials.username;
 }
 
 export async function register(credentials: registerConfig) {
 	credentials.password = await hash(credentials.password, salt)
-	console.log('cred')
 	console.log(credentials)
-	const sql = `INSERT INTO accounts(user, pass) VALUES("${credentials.username}", "${credentials.password}")`
-	console.log(sql)
-	const records = await db.query(sql)
+
+  const accounts = db.collection<AccountSchema>("accounts")
+
+  const insertId = await accounts.insertOne(credentials);
+
+  if(insertId) console.log(`Succesfully registered the user: ${credentials.username}`)
+  else console.log("Could not register...")
+	
 	return true
 }

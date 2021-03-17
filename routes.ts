@@ -5,18 +5,19 @@ import { Router, Status } from 'https://deno.land/x/oak/mod.ts'
 // status codes: https://deno.land/std@0.84.0/http/http_status.ts
 import { upload } from 'https://cdn.deno.land/oak_upload_middleware/versions/v2/raw/mod.ts'
 
-import { login, loginConfig, register, registerConfig } from './modules/accounts.ts'
+import { loginConfig, registerConfig } from './interfaces/request_interfaces.ts';
+
+import { login, register } from './modules/accounts.ts'
 import { extractCredentials, saveFile } from './modules/util.ts'
 
 const router: Router = new Router()
 
-// the routes defined here
 router.get('/', async context => {
 	const host: string = `https://${context.request.url.host}`
 	context.response.headers.set('Allow', 'GET')
 	const data = {
-		name: 'REST API Template',
-		desc: 'a simple template for developing REST APIs',
+		name: 'Collection Tracker API',
+		desc: 'a simple API for providing controlling information on packages',
 		links: [
 			{
 				name: 'accounts',
@@ -80,8 +81,10 @@ router.post('/accounts', async context => {
 	}
 	try {
 		const body  = await context.request.body()
-		const data = JSON.parse(await body.value)
-		console.log(data)
+    
+    const type = await body.type
+    const data = (type != 'json') ? JSON.parse(await body.value) : await body.value;
+
 		await register(data)
 		context.response.status = Status.Created
 		const msg = {
