@@ -1,19 +1,33 @@
 
 /* db.ts */
 
-import { Client, ClientConfig } from 'https://deno.land/x/mysql/mod.ts'
+import { MongoClient } from "https://deno.land/x/mongo@v0.21.0/mod.ts";
 
-const home = String(Deno.env.get('HOME'))
-console.log(`HOME: ${home}`)
+const client = new MongoClient();
 
-const conn: ClientConfig = {
-	hostname: '127.0.0.1',
-	username: 'websiteuser',
-	password: 'websitepassword',
-	db: 'website'
-}
-console.log(conn)
+const baseDB : string = Deno.env.get("BASE_DB") || '';
+const userDB : string = Deno.env.get("DB_USER") || '';
+const passDB : string = Deno.env.get("DB_PASS") || '';
 
-const db: Client = await new Client().connect(conn)
+const hostDB : string = Deno.env.get("DB_HOST") || '';
 
-export { db }
+await client.connect({
+  db: baseDB,
+  tls: true,
+  servers: [
+    { 
+      host: hostDB,
+      port: 27017,
+    },
+  ],
+  credential: {
+    username: userDB,
+    password: passDB,
+    db: baseDB,
+    mechanism: "SCRAM-SHA-1",
+  },
+});
+
+const db = client.database(baseDB)
+
+export default db;

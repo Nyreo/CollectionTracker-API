@@ -4,6 +4,9 @@
 import { Application, Router, Status } from 'https://deno.land/x/oak/mod.ts'
 import { parse } from 'https://deno.land/std/flags/mod.ts'
 
+// dotenv
+import "https://deno.land/x/dotenv/load.ts";
+
 import router from './routes.ts'
 
 const defaultPort = 8080
