@@ -12,8 +12,8 @@ import { extractCredentials, saveFile } from './modules/util.ts'
 
 const router: Router = new Router()
 
-router.get('/', async context => {
-	const host: string = `https://${context.request.url.host}`
+router.get('/', context => {
+	const host = `https://${context.request.url.host}`
 	context.response.headers.set('Allow', 'GET')
 	const data = {
 		name: 'Collection Tracker API',
@@ -154,7 +154,7 @@ router.post('/accounts', async context => {
 
 
 // default route to 404 not found
-router.get("/(.*)", async context => {     
+router.get("/(.*)", context => {     
 	context.response.body = JSON.stringify({ status: '404 not found' }, null, 2)
 })
 

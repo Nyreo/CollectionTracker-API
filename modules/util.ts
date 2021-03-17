@@ -23,7 +23,7 @@ export function extractCredentials(token: string): loginConfig {
 
 export function saveFile(base64String: string, username: string): void {
 	console.log('save file')
-	let [ metadata, base64Image ] = base64String.split(';base64,')
+	const [ metadata, base64Image ] = base64String.split(';base64,')
 	console.log(metadata)
 	const extension = metadata.split('/').pop()
 	console.log(extension)

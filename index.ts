@@ -41,7 +41,7 @@ app.use(router.allowedMethods())
 // })
 
 // page not found
-app.use( async context => {
+app.use( context => {
 	try {
 		console.log('404 PAGE NOT FOUND')
 		context.response.body = { status: 'error', msg: 'page not found' }
