@@ -4,7 +4,10 @@
 import { Application, Router, Status } from 'https://deno.land/x/oak/mod.ts'
 import { parse } from 'https://deno.land/std/flags/mod.ts'
 
-import router from './routes.ts'
+// dotenv
+import "https://deno.land/x/dotenv/load.ts";
+
+// import router from './routes.ts'
 
 const defaultPort = 8080
 const { args } = Deno
@@ -24,8 +27,8 @@ app.use(async (context, next) => {
 	}
 })
 
-app.use(router.routes())
-app.use(router.allowedMethods())
+// app.use(router.routes())
+// app.use(router.allowedMethods())
 
 // static content
 // app.use(async (context, next) => {
