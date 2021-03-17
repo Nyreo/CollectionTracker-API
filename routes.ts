@@ -30,12 +30,19 @@ router.get('/', async context => {
 	context.response.body = JSON.stringify(data, null, 2)
 })
 
+// fetch all accounts
 router.get('/accounts', async context => {
+
 	console.log('GET /accounts')
-	const token = context.request.headers.get('Authorization')
+	
+  // check if user is authorized
+  const token = context.request.headers.get('Authorization')
 	console.log(`auth: ${token}`)
+
+  // set response headers
 	context.response.headers.set('Allow', 'GET, POST')
-	const info = {
+	
+  const info = {
 		name: 'accounts',
 		desc: 'a list of user accounts',
 		schema: {
@@ -43,20 +50,32 @@ router.get('/accounts', async context => {
 			password: 'string'
 		},
 	}
+
 	try {
+    // if token not set, throw error
 		if(!token) throw new Error('no token found')
+
+    // extra credentials from token
 		const credentials = extractCredentials(token)
 		console.log(credentials)
+
+    // get username from login
 		const username = await login(credentials)
 		console.log(`username: ${username}`)
+
+    // set response status
 		context.response.status = Status.OK
+
+    // create response msg
 		const msg = {
 			info,
 			status: 'success',
 			data: { username }
 		}
 		context.response.body = JSON.stringify(msg, null, 2)
+
 	} catch(err) {
+    // if error occured, set status to unauthorized, send message
 		context.response.status = Status.Unauthorized
 		const msg = {
 			info,
@@ -68,9 +87,11 @@ router.get('/accounts', async context => {
 	}
 })
 
+// adding a new user to the collection
 router.post('/accounts', async context => {
 	console.log('POST /accounts')
 	context.response.headers.set('Allow', 'GET, POST')
+
 	const info = {
 		name: 'accounts',
 		desc: 'a list of user accounts',
@@ -83,9 +104,14 @@ router.post('/accounts', async context => {
 		const body  = await context.request.body()
     
     const type = await body.type
+
+    // check datatypes of submitted data
     const data = (type != 'json') ? JSON.parse(await body.value) : await body.value;
 
+    // attempt to register the user
 		await register(data)
+
+    // set reponse status
 		context.response.status = Status.Created
 		const msg = {
 			info,
@@ -108,23 +134,26 @@ router.post('/accounts', async context => {
 	}
 })
 
-router.post('/files', async context => {
-	console.log('POST /files')
-	try {
-		const token = context.request.headers.get('Authorization')
-		console.log(`auth: ${token}`)
-		const body  = await context.request.body()
-		const data = await body.value
-		console.log(data)
-		saveFile(data.base64, data.user)
-		context.response.status = 201
-		context.response.body = JSON.stringify({ status: 'success', msg: 'file uploaded' })
-	} catch(err) {
-		context.response.status = 401
-		context.response.body = JSON.stringify({ status: 'unauthorised', msg: err.msg })
-	}
-})
 
+// router.post('/files', async context => {
+// 	console.log('POST /files')
+// 	try {
+// 		const token = context.request.headers.get('Authorization')
+// 		console.log(`auth: ${token}`)
+// 		const body  = await context.request.body()
+// 		const data = await body.value
+// 		console.log(data)
+// 		saveFile(data.base64, data.user)
+// 		context.response.status = 201
+// 		context.response.body = JSON.stringify({ status: 'success', msg: 'file uploaded' })
+// 	} catch(err) {
+// 		context.response.status = 401
+// 		context.response.body = JSON.stringify({ status: 'unauthorised', msg: err.msg })
+// 	}
+// })
+
+
+// default route to 404 not found
 router.get("/(.*)", async context => {     
 	context.response.body = JSON.stringify({ status: '404 not found' }, null, 2)
 })
