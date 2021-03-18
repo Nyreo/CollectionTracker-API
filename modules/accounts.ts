@@ -5,7 +5,7 @@ import { compare, genSalt, hash } from 'https://deno.land/x/bcrypt@v0.2.4/mod.ts
 
 import db from './db.ts'
 
-import {AccountSchema} from '../interfaces/db_interfaces.ts'
+import { AccountSchema } from '../interfaces/db_interfaces.ts'
 import { loginConfig, registerConfig } from '../interfaces/request_interfaces.ts'
 
 const saltRounds = 10
@@ -15,8 +15,9 @@ export async function login(credentials: loginConfig) {
 	
   const accounts = db.collection<AccountSchema>("accounts");
   
+  //@ts-ignore //interface for built-in function does not include the option provided
   // check user exists
-  const user = await accounts.findOne({username:credentials.username})
+  const user = await accounts.findOne({username:credentials.username}, { noCursorTimeout:false })
   
   if(!user) throw new Error("A user with that name does not exist.")
   else {

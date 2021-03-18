@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # get staged files
-STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep ".ts")
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E "\w+\.ts")
 
 if [[ "$STAGED_FILES" = "" ]]; then
   exit 0
@@ -9,29 +9,27 @@ fi
 
 PASS=true
 
-echo "\nStarting linter...\n"
-
-# check linter results
+echo "Starting linter..."
 
 for FILE in $STAGED_FILES
 do
   deno lint --unstable "$FILE"
 
-  if [[ "$?" == 0]]; then
-    echo "\tDeno Lint passed: $FILE"
+  if [[ "$?" == 0 ]]; then
+    echo "o-DENO_LINT Passed: $FILE"
   else
-    echo "\tDeno Lint failed: $FILE"
+    echo "x-DENO_LINT Failed: $FILE"
     PASS=false
   fi
 done
 
-echo "\nLinter complete.\n"
+echo "Linter complete."
 
 if ! $PASS; then
-  echo "\nThe commit has failed. You must pass the linter validation before being able to commit. Please see the above message(s) for details.\n"
+  echo "The commit has failed. You must pass the linter validation before being able to commit. Please see the above message(s) for details."
   exit 1
 else
-  echo "\nCOMMIT SUCCEEDED\n"
+  echo "COMMIT SUCCEEDED"
 fi
 
 exit $?

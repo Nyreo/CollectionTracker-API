@@ -8,24 +8,17 @@ import { upload } from 'https://cdn.deno.land/oak_upload_middleware/versions/v2/
 import { loginConfig, registerConfig } from './interfaces/request_interfaces.ts';
 
 import { login, register } from './modules/accounts.ts'
-import { extractCredentials, saveFile } from './modules/util.ts'
+import { extractCredentials, getRequestInfo, saveFile } from './modules/util.ts'
 
 const router: Router = new Router()
 
 router.get('/', context => {
-	const host = `https://${context.request.url.host}`
-	context.response.headers.set('Allow', 'GET')
-	const data = {
-		name: 'Collection Tracker API',
-		desc: 'a simple API for providing controlling information on packages',
-		links: [
-			{
-				name: 'accounts',
-				desc: 'a list of user accounts',
-				href: `https://${host}/accounts`,
-			}
-		]
-	}
+	const host = context.request.url.host
+
+  const data = getRequestInfo("default", host);
+
+  context.response.headers.set('Allow', data.allows);
+
 	context.response.status = Status.OK
 	context.response.body = JSON.stringify(data, null, 2)
 })
@@ -35,28 +28,17 @@ router.get('/accounts', async context => {
 
 	console.log('GET /accounts')
 	
-  // check if user is authorized
+  // check if user has passed authroize header
   const token = context.request.headers.get('Authorization')
 	console.log(`auth: ${token}`)
 
-  // set response headers
-	context.response.headers.set('Allow', 'GET, POST')
-	
-  const info = {
-		name: 'accounts',
-		desc: 'a list of user accounts',
-		schema: {
-			username: 'string',
-			password: 'string'
-		},
-	}
+  // get info from file
+  const info = getRequestInfo("accounts")
+  context.response.headers.set('Allow', info.allows)
 
 	try {
-    // if token not set, throw error
-		if(!token) throw new Error('no token found')
-
     // extra credentials from token
-		const credentials = extractCredentials(token)
+		const credentials = extractCredentials(token!)
 		console.log(credentials)
 
     // get username from login
@@ -90,19 +72,13 @@ router.get('/accounts', async context => {
 // adding a new user to the collection
 router.post('/accounts', async context => {
 	console.log('POST /accounts')
-	context.response.headers.set('Allow', 'GET, POST')
+	
+  // get info from file
+  const info = getRequestInfo("accounts")
+  context.response.headers.set('Allow', info.allows)
 
-	const info = {
-		name: 'accounts',
-		desc: 'a list of user accounts',
-		schema: {
-			username: 'string',
-			password: 'string'
-		},
-	}
 	try {
 		const body  = await context.request.body()
-    
     const type = await body.type
 
     // check datatypes of submitted data
