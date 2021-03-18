@@ -19,5 +19,42 @@
       "password": "string"
     },
     "allows": "GET, POST"
+  },
+  "packages" : {
+    "name": "packages",
+    "desc": "a list of all requested packages",
+    "schema": {
+    
+    },
+    "links": [
+      {
+        "name": "username",
+        "desc": "gets all packages for a specific user",
+        "href": "/<username>"
+      },
+      {
+        "name": "trackingnumber",
+        "desc": "gets a specific package based on the tracking number",
+        "href": "/<trackingnumber>"
+      }
+    ],
+    "allows": "GET, POST"
+  },
+  "packages/<username>": {
+    "name": "packages/<username>",
+    "desc": "gets all packages for a specific user",
+    "schema": {
+
+    },
+    "queries": "courier",
+    "allows": "GET"
+  },
+  "packages/<trackingnumber>": {
+    "name": "packages/<trackingnumber>",
+    "desc": "gets a specific package based on the tracking number",
+    "schema": {
+
+    },
+    "allows": "GET, PUT, PATCH, HEAD"
   }
 }
