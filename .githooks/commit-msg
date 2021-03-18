@@ -10,7 +10,7 @@ current_branch="$(git rev-parse --abbrev-ref HEAD)"
 # if commiting to develop branch, must give:
   # highlight of issue
   # solution for the issue
-commit_regex='issue:\s.+\s-\ssolution:\s.+'
+commit_regex='(issue:\s.+\s-\ssolution:\s.+)|merge'
 error_msg="Aborting commit. When pushing to develop, you must include the issue found and your implemented solution. (issue: [issue desc.] - solution: [solution desc.]"
 
 if ! grep -iqE "$commit_regex" "$1"; then
