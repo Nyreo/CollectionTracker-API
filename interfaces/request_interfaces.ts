@@ -14,6 +14,7 @@ export interface requestInfo {
   desc : string
   schema? : Record<string, unknown>
   links? : requestLinks[]
+  queries? : string
   allows : string
 }
 
