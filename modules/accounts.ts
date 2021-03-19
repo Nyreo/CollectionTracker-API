@@ -21,8 +21,10 @@ export async function login(credentials: loginConfig) {
   
   if(!user) throw new Error("A user with that name does not exist.")
   else {
+    console.log(`Comparing passwords: ${credentials.password},${user.password}`)
     const pass = user.password
-    const valid = compare(credentials.password, pass);
+    const valid = await compare(credentials.password, pass);
+
 
     if(!valid) throw new Error(`Invalid password for user: ${credentials.username}.`);
   }

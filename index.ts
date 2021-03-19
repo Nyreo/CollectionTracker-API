@@ -3,6 +3,7 @@
 
 import { Application, Router, Status } from 'https://deno.land/x/oak/mod.ts'
 import { parse } from 'https://deno.land/std/flags/mod.ts'
+import { oakCors } from "https://deno.land/x/cors/mod.ts";
 
 // dotenv
 import "https://deno.land/x/dotenv/load.ts";
@@ -21,14 +22,23 @@ app.use(async (context, next) => {
 	try {
 		console.log(context.request.url.href)
 		context.response.headers.set('Content-Type', 'application/json')
+    
 		await next()
 	} catch (err) {
 		console.log(err)
 	}
 })
 
+app.use((ctx, next) => {
+  ctx.response.headers.set('Access-Control-Allow-Origin', '*')
+  return next()
+})
+
+// routes
 app.use(router.routes())
 app.use(router.allowedMethods())
+
+
 
 // static content
 // app.use(async (context, next) => {

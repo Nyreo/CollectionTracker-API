@@ -29,22 +29,27 @@ router.get('/accounts', async context => {
 	console.log('GET /accounts')
 	
   // check if user has passed authroize header
+  console.log('-fetching token')
   const token = context.request.headers.get('Authorization')
 	console.log(`auth: ${token}`)
 
+  console.log('-fetching info')
   // get info from file
   const info = getRequestInfo("accounts")
   context.response.headers.set('Allow', info.allows)
 
 	try {
+    console.log('-extracting details')
     // extra credentials from token
 		const credentials = extractCredentials(token!)
-		console.log(credentials)
+		console.log(`credentials: ${JSON.stringify(credentials)}`)
 
+    console.log('-fetching username')
     // get username from login
 		const username = await login(credentials)
 		console.log(`username: ${username}`)
 
+    console.log('-responding...')
     // set response status
 		context.response.status = Status.OK
 
