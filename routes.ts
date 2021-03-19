@@ -46,9 +46,10 @@ router.get('/accounts', async context => {
 
     console.log('-fetching username')
     // get username from login
-		const username = await login(credentials)
-		console.log(`username: ${username}`)
-
+		const userDetails = await login(credentials)
+		console.log(`username: ${userDetails.username}`)
+    console.log(`type: ${userDetails.userType}`)
+    
     console.log('-responding...')
     // set response status
 		context.response.status = Status.OK
@@ -57,7 +58,7 @@ router.get('/accounts', async context => {
 		const msg = {
 			info,
 			status: 'success',
-			data: { username }
+			data: userDetails
 		}
 		context.response.body = JSON.stringify(msg, null, 2)
 

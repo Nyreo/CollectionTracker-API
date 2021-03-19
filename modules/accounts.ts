@@ -28,7 +28,7 @@ export async function login(credentials: loginConfig) {
 
     if(!valid) throw new Error(`Invalid password for user: ${credentials.username}.`);
   }
-  return credentials.username;
+  return {username: user.username, userType: user.userType};
 }
 
 export async function register(credentials: registerConfig) {
