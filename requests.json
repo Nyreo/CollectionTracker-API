@@ -13,7 +13,7 @@
   },
   "accounts" : {
     "name": "accounts",
-    "desc": "a list of user accounts",
+    "desc": "user accounts",
     "schema": {
       "username": "string",
       "password": "string",
@@ -23,12 +23,13 @@
   },
   "packages" : {
     "name": "packages",
-    "desc": "a list of all requested packages",
+    "desc": "all requested packages",
     "schema": {
       "_id" : {
         "pseudo": "trackingNumber",
         "type:" : "string"
       },
+      "courier" : "string",
       "status" : "string",
       "addTime" : "number",
       "username" : "string",
@@ -54,12 +55,13 @@
   },
   "packages/<username>": {
     "name": "packages/<username>",
-    "desc": "gets all packages for a specific user",
+    "desc": "all packages for a specific user",
     "schema": {
       "_id" : {
         "pseudo": "trackingNumber",
         "type:" : "string"
       },
+      "courier" : "string",
       "status" : "string",
       "addTime" : "number",
       "username" : "string",
@@ -74,12 +76,13 @@
   },
   "packages/tracking/<trackingnumber>": {
     "name": "packages/tracking/<trackingnumber>",
-    "desc": "gets a specific package based on the tracking number",
+    "desc": "a specific package based on the tracking number",
     "schema": {
       "_id" : {
         "pseudo": "trackingNumber",
         "type:" : "string"
       },
+      "courier" : "string",
       "status" : "string",
       "addTime" : "number",
       "username" : "string",
@@ -89,6 +92,6 @@
       "destPostcode" : "string",
       "sendPostcode" : "string"
     },
-    "allows": "GET, PUT, PATCH, HEAD"
+    "allows": "GET, PATCH"
   }
 }

@@ -99,9 +99,8 @@ const withPackageRouter = (router: Router) => {
     // packages by username
     .get<{username: string}>(`${SUB_ROUTE}/:username`, async context => {
 
-      
+      const params = helpers.getQuery(context, {mergeParams: true})
 
-      const username = context.params.username
       // check if user has passed authroize header
       console.log('-fetching token')
       const token = context.request.headers.get('Authorization')
@@ -118,11 +117,21 @@ const withPackageRouter = (router: Router) => {
         await verifyToken(token)
 
         // check username was provided
-        if(!username) throw new Error("Username was not provided")
+        if(!params.username) throw new Error("Username was not provided")
         
         // get packages
-        console.log(`-getting package(s) for username: ${username}`)
-        const packages = await getPackages({username});
+        console.log(`-getting package(s) for username: ${params.username}`)
+
+        let filter;
+
+        if(params.courier.toLowerCase() === "true") {
+          console.log(`\t-isCourier`)
+
+          filter = { courier: params.username };
+        } else {
+          filter = { username : params.username } 
+        }
+        const packages = await getPackages(filter);
 
         console.log('-responding')
         // set response status
