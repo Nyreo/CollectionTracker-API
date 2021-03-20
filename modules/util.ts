@@ -4,21 +4,21 @@
 import { Base64 } from 'https://deno.land/x/bb64/mod.ts'
 
 import { loginConfig, requestInfo, requestLinks } from '../interfaces/request_interfaces.ts'
+import { login } from './accounts.ts';
 
 const requests = JSON.parse(Deno.readTextFileSync('./requests.json'));
 
 export function extractCredentials(token: string): loginConfig {
-	console.log('checkAuth')
+	console.log('-checking auth')
 	if(token === undefined) throw new Error('no auth header')
 	const [type, hash] = token.split(' ')
-	console.log(`${type} : ${hash}`)
+  console.log('\tFound auth')
 	if(type !== 'Basic') throw new Error('wrong auth type, requires Basic')
+  console.log('\tCorrect type')
 	const str = atob(hash)
-	console.log(str)
 	if(str.indexOf(':') === -1) throw new Error('invalid auth format')
+  console.log('\tCorrect format')
 	const [username, password] = str.split(':')
-	console.log(username)
-	console.log(password)
 	return { username, password }
 }
 
@@ -33,6 +33,20 @@ export function getRequestInfo(request: string, host?: string): requestInfo {
     }
   }
   return info;
+}
+
+// check token by loggin in -- returns user details
+export async function verifyToken(token: string) {
+  const credentials = extractCredentials(token!)
+  console.log(`credentials: ${JSON.stringify(credentials)}`)
+
+  console.log('-fetching userDetails')
+
+  const userDetails = await login(credentials)
+  console.log(`username: ${userDetails.username}`)
+  console.log(`type: ${userDetails.userType}`)
+  
+  return userDetails
 }
 
 export function saveFile(base64String: string, username: string): void {

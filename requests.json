@@ -13,18 +13,31 @@
   },
   "accounts" : {
     "name": "accounts",
-    "desc": "a list of user accounts",
+    "desc": "user accounts",
     "schema": {
       "username": "string",
-      "password": "string"
+      "password": "string",
+      "userType": "string"
     },
     "allows": "GET, POST"
   },
   "packages" : {
     "name": "packages",
-    "desc": "a list of all requested packages",
+    "desc": "all requested packages",
     "schema": {
-    
+      "_id" : {
+        "pseudo": "trackingNumber",
+        "type:" : "string"
+      },
+      "courier" : "string",
+      "status" : "string",
+      "addTime" : "number",
+      "username" : "string",
+      "address" : "string",
+      "recpName" : "string",
+      "weight" : "number",
+      "destPostcode" : "string",
+      "sendPostcode" : "string"
     },
     "links": [
       {
@@ -35,26 +48,50 @@
       {
         "name": "trackingnumber",
         "desc": "gets a specific package based on the tracking number",
-        "href": "/<trackingnumber>"
+        "href": "/tracking"
       }
     ],
     "allows": "GET, POST"
   },
   "packages/<username>": {
     "name": "packages/<username>",
-    "desc": "gets all packages for a specific user",
+    "desc": "all packages for a specific user",
     "schema": {
-
+      "_id" : {
+        "pseudo": "trackingNumber",
+        "type:" : "string"
+      },
+      "courier" : "string",
+      "status" : "string",
+      "addTime" : "number",
+      "username" : "string",
+      "address" : "string",
+      "recpName" : "string",
+      "weight" : "number",
+      "destPostcode" : "string",
+      "sendPostcode" : "string"
     },
     "queries": "courier",
     "allows": "GET"
   },
-  "packages/<trackingnumber>": {
-    "name": "packages/<trackingnumber>",
-    "desc": "gets a specific package based on the tracking number",
+  "packages/tracking/<trackingnumber>": {
+    "name": "packages/tracking/<trackingnumber>",
+    "desc": "a specific package based on the tracking number",
     "schema": {
-
+      "_id" : {
+        "pseudo": "trackingNumber",
+        "type:" : "string"
+      },
+      "courier" : "string",
+      "status" : "string",
+      "addTime" : "number",
+      "username" : "string",
+      "address" : "string",
+      "recpName" : "string",
+      "weight" : "number",
+      "destPostcode" : "string",
+      "sendPostcode" : "string"
     },
-    "allows": "GET, PUT, PATCH, HEAD"
+    "allows": "GET, PATCH"
   }
 }

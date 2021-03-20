@@ -40,7 +40,6 @@ export async function register(credentials: registerConfig) {
   const insertId = await accounts.insertOne(credentials);
 
   if(insertId) console.log(`Succesfully registered the user: ${credentials.username}`)
-  else console.log("Could not register...")
-	
+  else throw new Error("Could not register...")
 	return true
 }
