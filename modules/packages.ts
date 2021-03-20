@@ -2,13 +2,13 @@ import db from './db.ts'
 
 import { PackageSchema } from '../interfaces/db_interfaces.ts'
 
-export async function getPackages(username?: string) {
+export async function getPackages(filter? : Record<string, unknown>) {
 
   const packages = db.collection<PackageSchema>("packages");
 
-  // const query = username ? {username} : {}
+  const query = filter ? filter : {}
   //@ts-ignore // does not include noCursorTimeout in interface
-  const packageList = await packages.find({}, { noCursorTimeout:false })
+  const packageList = await packages.find(query, { noCursorTimeout:false })
 
   return await packageList.toArray()
 }

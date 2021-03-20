@@ -93,6 +93,55 @@ const withPackageRouter = (router: Router) => {
         context.response.body = JSON.stringify(msg, null, 2)
       }
     })
+    .get<{username: string}>(`${SUB_ROUTE}/:username`, async context => {
+
+      const username = context.params.username
+      // check if user has passed authroize header
+      console.log('-fetching token')
+      const token = context.request.headers.get('Authorization')
+      console.log(`auth: ${token}`)
+    
+      // get info from file
+      console.log('-fetching info')
+      const info = getRequestInfo("packages")
+      context.response.headers.set('Allow', info.allows)
+    
+      try {
+        // verify
+        if(!token) throw new Error('Invalid token')
+        await verifyToken(token)
+
+        // check username was provided
+        if(!username) throw new Error("Username was not provided")
+        
+        // get packages
+        console.log(`-getting package(s) for username: ${username}`)
+        const packages = await getPackages({username});
+
+        console.log('-responding')
+        // set response status
+        context.response.status = Status.OK
+    
+        // create response msg
+        const msg = {
+          info,
+          status: 'success',
+          data: packages
+        }
+        context.response.body = JSON.stringify(msg, null, 2)
+    
+      } catch(err) {
+        // if error occured, set status to unauthorized, send message
+        context.response.status = Status.Unauthorized
+        const msg = {
+          info,
+          status: 'Unauthorized',
+          msg: 'This route requires Basic Access Authentication',
+          err: err.message
+        }
+        context.response.body = JSON.stringify(msg, null, 2)
+      }
+    })
 }
 
 export default withPackageRouter

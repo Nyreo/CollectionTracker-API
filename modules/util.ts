@@ -9,17 +9,16 @@ import { login } from './accounts.ts';
 const requests = JSON.parse(Deno.readTextFileSync('./requests.json'));
 
 export function extractCredentials(token: string): loginConfig {
-	console.log('checkAuth')
+	console.log('-checking auth')
 	if(token === undefined) throw new Error('no auth header')
 	const [type, hash] = token.split(' ')
-	console.log(`${type} : ${hash}`)
+  console.log('\tFound auth')
 	if(type !== 'Basic') throw new Error('wrong auth type, requires Basic')
+  console.log('\tCorrect type')
 	const str = atob(hash)
-	console.log(str)
 	if(str.indexOf(':') === -1) throw new Error('invalid auth format')
+  console.log('\tCorrect format')
 	const [username, password] = str.split(':')
-	console.log(username)
-	console.log(password)
 	return { username, password }
 }
 
