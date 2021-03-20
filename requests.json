@@ -35,7 +35,7 @@
       {
         "name": "trackingnumber",
         "desc": "gets a specific package based on the tracking number",
-        "href": "/<trackingnumber>"
+        "href": "/tracking"
       }
     ],
     "allows": "GET, POST"
@@ -49,8 +49,8 @@
     "queries": "courier",
     "allows": "GET"
   },
-  "packages/<trackingnumber>": {
-    "name": "packages/<trackingnumber>",
+  "packages/tracking/<trackingnumber>": {
+    "name": "packages/tracking/<trackingnumber>",
     "desc": "gets a specific package based on the tracking number",
     "schema": {
 

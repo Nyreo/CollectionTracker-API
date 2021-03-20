@@ -9,6 +9,7 @@ const withPackageRouter = (router: Router) => {
   const SUB_ROUTE = '/packages'
 
   router
+    // get all packages
     .get(SUB_ROUTE, async context => {
       console.log(`GET ${SUB_ROUTE}`)
 
@@ -55,6 +56,7 @@ const withPackageRouter = (router: Router) => {
         context.response.body = JSON.stringify(msg, null, 2)
       }
     })
+    // add new package
     .post(SUB_ROUTE, async context => {
       console.log(`POST ${SUB_ROUTE}`)
   
@@ -93,6 +95,7 @@ const withPackageRouter = (router: Router) => {
         context.response.body = JSON.stringify(msg, null, 2)
       }
     })
+    // packages by username
     .get<{username: string}>(`${SUB_ROUTE}/:username`, async context => {
 
       const username = context.params.username
@@ -103,7 +106,7 @@ const withPackageRouter = (router: Router) => {
     
       // get info from file
       console.log('-fetching info')
-      const info = getRequestInfo("packages")
+      const info = getRequestInfo("packages/<username>")
       context.response.headers.set('Allow', info.allows)
     
       try {
@@ -142,6 +145,57 @@ const withPackageRouter = (router: Router) => {
         context.response.body = JSON.stringify(msg, null, 2)
       }
     })
+    // get package by trackingnumber
+    .get<{trackingnumber: string}>(`${SUB_ROUTE}/tracking/:trackingnumber`, async context => {
+
+      const trackingNumber = context.params.trackingnumber
+      // check if user has passed authroize header
+      console.log('-fetching token')
+      const token = context.request.headers.get('Authorization')
+      console.log(`auth: ${token}`)
+    
+      // get info from file
+      console.log('-fetching info')
+      const info = getRequestInfo("packages/tracking/<trackingnumber>")
+      context.response.headers.set('Allow', info.allows)
+    
+      try {
+        // verify
+        if(!token) throw new Error('Invalid token')
+        await verifyToken(token)
+
+        // check trackingNumber was provided
+        if(!trackingNumber) throw new Error("Tracking number was not provided")
+        
+        // get packages
+        console.log(`-getting package associated with trackingnumber: ${trackingNumber}`)
+        const _package = await getPackages({trackingNumber});
+
+        console.log('-responding')
+        // set response status
+        context.response.status = Status.OK
+    
+        // create response msg
+        const msg = {
+          info,
+          status: 'success',
+          data: _package
+        }
+        context.response.body = JSON.stringify(msg, null, 2)
+    
+      } catch(err) {
+        // if error occured, set status to unauthorized, send message
+        context.response.status = Status.Unauthorized
+        const msg = {
+          info,
+          status: 'Unauthorized',
+          msg: 'This route requires Basic Access Authentication',
+          err: err.message
+        }
+        context.response.body = JSON.stringify(msg, null, 2)
+      }
+    })
+    
 }
 
 export default withPackageRouter
