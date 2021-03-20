@@ -8,7 +8,6 @@ export interface AccountSchema {
 
 export interface PackageSchema {
   _id: { $oid: string }
-  trackingNumber: string
   status: string
   addTime: number
   username: string

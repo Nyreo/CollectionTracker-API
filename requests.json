@@ -25,7 +25,10 @@
     "name": "packages",
     "desc": "a list of all requested packages",
     "schema": {
-      "trackingNumber" : "string",
+      "_id" : {
+        "pseudo": "trackingNumber",
+        "type:" : "string"
+      },
       "status" : "string",
       "addTime" : "number",
       "username" : "string",
@@ -53,7 +56,10 @@
     "name": "packages/<username>",
     "desc": "gets all packages for a specific user",
     "schema": {
-      "trackingNumber" : "string",
+      "_id" : {
+        "pseudo": "trackingNumber",
+        "type:" : "string"
+      },
       "status" : "string",
       "addTime" : "number",
       "username" : "string",
@@ -70,7 +76,10 @@
     "name": "packages/tracking/<trackingnumber>",
     "desc": "gets a specific package based on the tracking number",
     "schema": {
-      "trackingNumber" : "string",
+      "_id" : {
+        "pseudo": "trackingNumber",
+        "type:" : "string"
+      },
       "status" : "string",
       "addTime" : "number",
       "username" : "string",

@@ -1,8 +1,9 @@
-import { Router, Status } from 'https://deno.land/x/oak/mod.ts'
+import { Router, Status, helpers } from 'https://deno.land/x/oak/mod.ts'
+import { Bson } from "https://deno.land/x/mongo@v0.21.0/mod.ts";
 
 import { extractCredentials, getRequestInfo, verifyToken } from '../../modules/util.ts'
 
-import { getPackages, postPackage } from '../../modules/packages.ts';
+import { getPackages, postPackage, patchPackage } from '../../modules/packages.ts';
 
 const withPackageRouter = (router: Router) => {
 
@@ -73,8 +74,7 @@ const withPackageRouter = (router: Router) => {
     
         // attempt to register the user
         console.log('-received package')
-        console.log(data)
-        await postPackage(data)
+        const _id = await postPackage(data)
     
         // set reponse status
         context.response.status = Status.Created
@@ -82,6 +82,7 @@ const withPackageRouter = (router: Router) => {
           info,
           status: 'Created',
           msg: 'package added',
+          data: {trackingNumber: _id}
         }
         context.response.body = JSON.stringify(msg, null, 2)
       } catch(err) {
@@ -97,6 +98,8 @@ const withPackageRouter = (router: Router) => {
     })
     // packages by username
     .get<{username: string}>(`${SUB_ROUTE}/:username`, async context => {
+
+      
 
       const username = context.params.username
       // check if user has passed authroize header
@@ -169,7 +172,7 @@ const withPackageRouter = (router: Router) => {
         
         // get packages
         console.log(`-getting package associated with trackingnumber: ${trackingNumber}`)
-        const _package = await getPackages({trackingNumber});
+        const _package = (await getPackages({_id: new Bson.ObjectId(trackingNumber)}))[0];
 
         console.log('-responding')
         // set response status
@@ -180,6 +183,68 @@ const withPackageRouter = (router: Router) => {
           info,
           status: 'success',
           data: _package
+        }
+        context.response.body = JSON.stringify(msg, null, 2)
+    
+      } catch(err) {
+        // if error occured, set status to unauthorized, send message
+        context.response.status = Status.Unauthorized
+        const msg = {
+          info,
+          status: 'Unauthorized',
+          msg: 'This route requires Basic Access Authentication',
+          err: err.message
+        }
+        context.response.body = JSON.stringify(msg, null, 2)
+      }
+    })
+    // update package status
+    .patch(`${SUB_ROUTE}/tracking/:trackingnumber`, async context => {
+
+      const trackingNumber = context.params.trackingnumber
+      // check if user has passed authroize header
+      console.log('-fetching token')
+      const token = context.request.headers.get('Authorization')
+      console.log(`auth: ${token}`)
+    
+      // get info from file
+      console.log('-fetching info')
+      const info = getRequestInfo("packages/tracking/<trackingnumber>")
+      context.response.headers.set('Allow', info.allows)
+    
+      try {
+        const body  = await context.request.body()
+        const type = await body.type
+    
+        // check datatypes of submitted data
+        const data = (type != 'json') ? JSON.parse(await body.value) : await body.value;
+        
+        console.log(data)
+        // verify
+        if(!token) throw new Error('Invalid token')
+        await verifyToken(token)
+
+        // check trackingNumber was provided
+        if(!trackingNumber) throw new Error("Tracking number was not provided")
+        
+        // check status was provided
+        if(!data.status) throw new Error("Status value is missing")
+
+        // patch packages
+        console.log(`-patching package status associated with trackingnumber: ${trackingNumber} to ${data.status}`)
+        
+        const success: boolean = await patchPackage(new Bson.ObjectId(trackingNumber), data.status);
+        if(!success) throw new Error("Issue updating that package, please check the error message");
+
+        console.log('-responding')
+        // set response status
+        context.response.status = Status.OK
+    
+        // create response msg
+        const msg = {
+          info,
+          status: 'success',
+          data: { status : data.status }
         }
         context.response.body = JSON.stringify(msg, null, 2)
     
