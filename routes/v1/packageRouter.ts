@@ -57,11 +57,21 @@ const withPackageRouter = (router: Router) => {
     })
     // add new package
     .post(SUB_ROUTE, async context => {
+
+      // check if user has passed authroize header
+      console.log('-fetching token')
+      const token = context.request.headers.get('Authorization')
+      console.log(`auth: ${token}`)
+
       // get info from file
       const info = getRequestInfo("packages")
       context.response.headers.set('Allow', info.allows)
     
       try {
+        // verify
+        if(!token) throw new Error('Invalid token')
+        const {username} = await verifyToken(token)
+
         const body  = await context.request.body()
         const type = await body.type
     
@@ -70,6 +80,12 @@ const withPackageRouter = (router: Router) => {
     
         // attempt to register the user
         console.log('-received package')
+
+        // add inferred data
+        data.username = username
+        data.date = (new Date()).getTime()
+        data.status = "not-dispatched"
+
         const _id = await postPackage(data)
     
         // set reponse status
