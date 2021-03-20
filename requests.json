@@ -16,7 +16,8 @@
     "desc": "a list of user accounts",
     "schema": {
       "username": "string",
-      "password": "string"
+      "password": "string",
+      "userType": "string"
     },
     "allows": "GET, POST"
   },
@@ -24,7 +25,15 @@
     "name": "packages",
     "desc": "a list of all requested packages",
     "schema": {
-    
+      "trackingNumber" : "string",
+      "status" : "string",
+      "addTime" : "number",
+      "username" : "string",
+      "address" : "string",
+      "recpName" : "string",
+      "weight" : "number",
+      "destPostcode" : "string",
+      "sendPostcode" : "string"
     },
     "links": [
       {
@@ -44,7 +53,15 @@
     "name": "packages/<username>",
     "desc": "gets all packages for a specific user",
     "schema": {
-
+      "trackingNumber" : "string",
+      "status" : "string",
+      "addTime" : "number",
+      "username" : "string",
+      "address" : "string",
+      "recpName" : "string",
+      "weight" : "number",
+      "destPostcode" : "string",
+      "sendPostcode" : "string"
     },
     "queries": "courier",
     "allows": "GET"
@@ -53,7 +70,15 @@
     "name": "packages/tracking/<trackingnumber>",
     "desc": "gets a specific package based on the tracking number",
     "schema": {
-
+      "trackingNumber" : "string",
+      "status" : "string",
+      "addTime" : "number",
+      "username" : "string",
+      "address" : "string",
+      "recpName" : "string",
+      "weight" : "number",
+      "destPostcode" : "string",
+      "sendPostcode" : "string"
     },
     "allows": "GET, PUT, PATCH, HEAD"
   }
