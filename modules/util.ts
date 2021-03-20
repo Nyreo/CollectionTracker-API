@@ -4,6 +4,7 @@
 import { Base64 } from 'https://deno.land/x/bb64/mod.ts'
 
 import { loginConfig, requestInfo, requestLinks } from '../interfaces/request_interfaces.ts'
+import { login } from './accounts.ts';
 
 const requests = JSON.parse(Deno.readTextFileSync('./requests.json'));
 
@@ -33,6 +34,20 @@ export function getRequestInfo(request: string, host?: string): requestInfo {
     }
   }
   return info;
+}
+
+// check token by loggin in -- returns user details
+export async function verifyToken(token: string) {
+  const credentials = extractCredentials(token!)
+  console.log(`credentials: ${JSON.stringify(credentials)}`)
+
+  console.log('-fetching userDetails')
+
+  const userDetails = await login(credentials)
+  console.log(`username: ${userDetails.username}`)
+  console.log(`type: ${userDetails.userType}`)
+  
+  return userDetails
 }
 
 export function saveFile(base64String: string, username: string): void {
