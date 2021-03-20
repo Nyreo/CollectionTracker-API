@@ -2,7 +2,7 @@ import { Router, Status } from 'https://deno.land/x/oak/mod.ts'
 
 import { extractCredentials, getRequestInfo, verifyToken } from '../../modules/util.ts'
 
-import { getPackages } from '../../modules/packages.ts';
+import { getPackages, postPackage } from '../../modules/packages.ts';
 
 const withPackageRouter = (router: Router) => {
 
@@ -19,7 +19,7 @@ const withPackageRouter = (router: Router) => {
     
       // get info from file
       console.log('-fetching info')
-      const info = getRequestInfo("accounts")
+      const info = getRequestInfo("packages")
       context.response.headers.set('Allow', info.allows)
     
       try {
@@ -50,6 +50,44 @@ const withPackageRouter = (router: Router) => {
           info,
           status: 'Unauthorized',
           msg: 'This route requires Basic Access Authentication',
+          err: err.message
+        }
+        context.response.body = JSON.stringify(msg, null, 2)
+      }
+    })
+    .post(SUB_ROUTE, async context => {
+      console.log(`POST ${SUB_ROUTE}`)
+  
+      // get info from file
+      const info = getRequestInfo("packages")
+      context.response.headers.set('Allow', info.allows)
+    
+      try {
+        const body  = await context.request.body()
+        const type = await body.type
+    
+        // check datatypes of submitted data
+        const data = (type != 'json') ? JSON.parse(await body.value) : await body.value;
+    
+        // attempt to register the user
+        console.log('-received package')
+        console.log(data)
+        await postPackage(data)
+    
+        // set reponse status
+        context.response.status = Status.Created
+        const msg = {
+          info,
+          status: 'Created',
+          msg: 'package added',
+        }
+        context.response.body = JSON.stringify(msg, null, 2)
+      } catch(err) {
+        context.response.status = Status.NoContent
+        const msg = {
+          info,
+          status: 'NoContent',
+          msg: 'Could not add package',
           err: err.message
         }
         context.response.body = JSON.stringify(msg, null, 2)
