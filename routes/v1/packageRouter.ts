@@ -135,12 +135,14 @@ const withPackageRouter = (router: Router) => {
 
         let filter;
 
-        if(params.courier.toLowerCase() === "true") {
-          console.log(`\t-isCourier`)
+        if(params.courier) {
+          if(params.courier.toLowerCase() === "true") {
+            console.log(`\t-isCourier`)
 
-          filter = { courier: params.username };
+            filter = { courier: params.username };
+          }
         } else {
-          filter = { username : params.username } 
+            filter = { username : params.username } 
         }
         const packages = await getPackages(filter);
 
