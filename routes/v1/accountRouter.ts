@@ -10,8 +10,6 @@ const SUB_ROUTE='/accounts'
 const withAccountRouter = (router: Router) => {
   router 
     .get(SUB_ROUTE, async context => {
-      console.log(`GET ${SUB_ROUTE}`)
-  
       // check if user has passed authroize header
       console.log('-fetching token')
       const token = context.request.headers.get('Authorization')
@@ -53,8 +51,6 @@ const withAccountRouter = (router: Router) => {
       }
     })
     .post(SUB_ROUTE, async context => {
-      console.log(`POST ${SUB_ROUTE}`)
-  
       // get info from file
       const info = getRequestInfo("accounts")
       context.response.headers.set('Allow', info.allows)

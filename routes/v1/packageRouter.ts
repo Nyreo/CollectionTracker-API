@@ -12,8 +12,6 @@ const withPackageRouter = (router: Router) => {
   router
     // get all packages
     .get(SUB_ROUTE, async context => {
-      console.log(`GET ${SUB_ROUTE}`)
-
       // check if user has passed authroize header
       console.log('-fetching token')
       const token = context.request.headers.get('Authorization')
@@ -59,8 +57,6 @@ const withPackageRouter = (router: Router) => {
     })
     // add new package
     .post(SUB_ROUTE, async context => {
-      console.log(`POST ${SUB_ROUTE}`)
-  
       // get info from file
       const info = getRequestInfo("packages")
       context.response.headers.set('Allow', info.allows)
@@ -98,7 +94,6 @@ const withPackageRouter = (router: Router) => {
     })
     // packages by username
     .get<{username: string}>(`${SUB_ROUTE}/:username`, async context => {
-
       const params = helpers.getQuery(context, {mergeParams: true})
 
       // check if user has passed authroize header
@@ -159,7 +154,6 @@ const withPackageRouter = (router: Router) => {
     })
     // get package by trackingnumber
     .get<{trackingnumber: string}>(`${SUB_ROUTE}/tracking/:trackingnumber`, async context => {
-
       const trackingNumber = context.params.trackingnumber
       // check if user has passed authroize header
       console.log('-fetching token')
@@ -209,7 +203,6 @@ const withPackageRouter = (router: Router) => {
     })
     // update package status
     .patch(`${SUB_ROUTE}/tracking/:trackingnumber`, async context => {
-
       const trackingNumber = context.params.trackingnumber
       // check if user has passed authroize header
       console.log('-fetching token')

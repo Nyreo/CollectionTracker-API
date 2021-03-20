@@ -71,7 +71,12 @@
       "destPostcode" : "string",
       "sendPostcode" : "string"
     },
-    "queries": "courier",
+    "queries": [
+      {
+        "name": "courier",
+        "desc": "determines whether or not the requesting user is a courier"
+      }
+    ],
     "allows": "GET"
   },
   "packages/tracking/<trackingnumber>": {
