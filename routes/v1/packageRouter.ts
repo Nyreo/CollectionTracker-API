@@ -133,17 +133,13 @@ const withPackageRouter = (router: Router) => {
         // get packages
         console.log(`-getting package(s) for username: ${params.username}`)
 
-        let filter;
+        let filter: Record<string, string> = { username: params.username};
 
+        // if courier supplied
         if(params.courier) {
-          if(params.courier.toLowerCase() === "true") {
-            console.log(`\t-isCourier`)
-
-            filter = { courier: params.username };
-          }
-        } else {
-            filter = { username : params.username } 
+          filter = params.courier.toLowerCase() === 'true' ? { courier : params.username } : filter
         }
+
         const packages = await getPackages(filter);
 
         console.log('-responding')
@@ -242,7 +238,7 @@ const withPackageRouter = (router: Router) => {
         console.log(data)
         // verify
         if(!token) throw new Error('Invalid token')
-        await verifyToken(token)
+        const {username} = await verifyToken(token)
 
         // check trackingNumber was provided
         if(!trackingNumber) throw new Error("Tracking number was not provided")
@@ -250,11 +246,13 @@ const withPackageRouter = (router: Router) => {
         // check status was provided
         if(!data.status) throw new Error("Status value is missing")
 
+        // check length
+        if(trackingNumber.length !== 24) throw new Error("Tracking number is not the correct length.");
+
         // patch packages
         console.log(`-patching package status associated with trackingnumber: ${trackingNumber} to ${data.status}`)
         
-        const success: boolean = await patchPackage(new Bson.ObjectId(trackingNumber), data.status);
-        if(!success) throw new Error("Issue updating that package, please check the error message");
+        const _package = await patchPackage(new Bson.ObjectId(trackingNumber), data.status, username);
 
         console.log('-responding')
         // set response status
@@ -264,7 +262,7 @@ const withPackageRouter = (router: Router) => {
         const msg = {
           info,
           status: 'success',
-          data: { status : data.status }
+          data: _package
         }
         context.response.body = JSON.stringify(msg, null, 2)
     

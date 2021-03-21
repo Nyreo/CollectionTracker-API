@@ -28,19 +28,31 @@ export function postPackage(_package: PackageSchema) {
   return insertId
 }
 
-export async function patchPackage(trackingNumber: Bson.ObjectId, status: string): Promise<boolean> {
+export async function patchPackage(trackingNumber: Bson.ObjectId, status: string, username: string): Promise<PackageSchema> {
 
   const packages = db.collection<PackageSchema>("packages");
 
   if(availableStatus.indexOf(status) === -1) throw new Error("Invalid status value")
 
-  const {matchedCount, modifiedCount, upsertedId} = await packages.updateOne(
+  // if changing to dispatched, set courier value asw well 
+  let setFields: Record<string, unknown> = {status}
+  if(status === 'dispatched') {
+    setFields = {...setFields, courier: username}
+  } else if(status === 'delivered') {
+    // infer stuff here
+  }
+
+  const { matchedCount, modifiedCount } = await packages.updateOne(
     { _id : trackingNumber },
-    { $set : { status: status }}
+    { $set : setFields}
   )
 
-  console.log(`matchedCount: ${matchedCount}`)
-  console.log(`modifiedCount: ${modifiedCount}`)
+  if(matchedCount <= 0) throw new Error("A package with that tracking number does not exist.");
+  if(modifiedCount <= 0) throw new Error("No changes were made.");
 
-  return true
+  // return record
+  //@ts-ignore // does not include noCursorTimeout in interface
+  const _package: PackageSchema = await packages.findOne({ _id: trackingNumber }, { noCursorTimeout:false })
+
+  return _package
 }
