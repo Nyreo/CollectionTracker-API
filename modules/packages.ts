@@ -3,7 +3,7 @@ import { Bson } from "https://deno.land/x/mongo@v0.21.0/mod.ts";
 
 import { PackageSchema } from '../interfaces/db_interfaces.ts'
 
-const availableStatus = ['not-dispatched', 'dispatched', 'delivered']
+const availableStatus = ['not-dispatched', 'in-transit', 'delivered']
 
 export async function getPackages(filter? : Record<string, unknown>) {
 
@@ -31,12 +31,13 @@ export function postPackage(_package: PackageSchema) {
 export async function patchPackage(trackingNumber: Bson.ObjectId, status: string, username: string): Promise<PackageSchema> {
 
   const packages = db.collection<PackageSchema>("packages");
+  status = status.toLowerCase()
 
-  if(availableStatus.indexOf(status) === -1) throw new Error("Invalid status value")
+  if(availableStatus.indexOf(status) === -1) throw new Error(`Invalid status value, accepted values: ${availableStatus}`)
 
   // if changing to dispatched, set courier value asw well 
   let setFields: Record<string, unknown> = {status}
-  if(status === 'dispatched') {
+  if(status === 'in-transit') {
     setFields = {...setFields, courier: username}
   } else if(status === 'delivered') {
     // infer stuff here

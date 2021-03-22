@@ -133,11 +133,14 @@ const withPackageRouter = (router: Router) => {
         // get packages
         console.log(`-getting package(s) for username: ${params.username}`)
 
-        let filter: Record<string, string> = { username: params.username};
+        let filter: Record<string, unknown> = { username: params.username};
 
         // if courier supplied
         if(params.courier) {
-          filter = params.courier.toLowerCase() === 'true' ? { courier : params.username } : filter
+          filter = params.courier.toLowerCase() === 'true' ? 
+            { courier : params.username, status : { $ne : 'delivered' } } 
+            : 
+            filter
         }
 
         const packages = await getPackages(filter);
