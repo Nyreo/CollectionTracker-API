@@ -39,7 +39,7 @@ export function getRequestInfo(VERSION: string, request: string, host?: string):
   // customise links to include host - if they exist
   if(info.links) {
     for(const link of info.links) {
-      link.href = host + link.href;
+      link.href = `${host}/${VERSION}/${link.name}`;
     }
   }
   return info;

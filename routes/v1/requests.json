@@ -47,7 +47,7 @@
     },
     "links": [
       {
-        "name": "username",
+        "name": "<username>",
         "desc": "gets all packages for a specific user",
         "href": "/<username>"
       }
@@ -55,7 +55,7 @@
     "queries": [
       {
         "name": "trackingnumber",
-        "desc": "gets a specific package based on the tracking number"
+        "desc": "queries the collection based on the tracking number"
       }
     ],
     "allows": "GET, POST, PATCH"
@@ -85,25 +85,5 @@
       }
     ],
     "allows": "GET"
-  },
-  "packages/<trackingnumber>": {
-    "name": "packages/<trackingnumber>",
-    "desc": "a specific package based on the tracking number",
-    "schema": {
-      "_id" : {
-        "pseudo": "trackingNumber",
-        "type:" : "string"
-      },
-      "courier" : "string",
-      "status" : "string",
-      "addTime" : "number",
-      "username" : "string",
-      "address" : "string",
-      "recpName" : "string",
-      "weight" : "number",
-      "destPostcode" : "string",
-      "sendPostcode" : "string"
-    },
-    "allows": "GET, PATCH"
   }
 }
