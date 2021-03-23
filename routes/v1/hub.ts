@@ -9,9 +9,11 @@ import { getRequestInfo } from '../../modules/util.ts'
 import withAccountRouter from './accountRouter.ts'
 import withPackageRouter from './packageRouter.ts'
 
+const VERSION_URI = '/v1'
+
 const router: Router = new Router()
 
-router.get('/', context => {
+router.get(`${VERSION_URI}/`, context => {
 	const host = context.request.url.host
 
   const data = getRequestInfo("default", host);
@@ -27,7 +29,7 @@ withAccountRouter(router)
 withPackageRouter(router)
 
 // default route to 404 not found
-router.get("/(.*)", context => {     
+router.get(`${VERSION_URI}/(.*)`, context => {     
 	context.response.body = JSON.stringify({ status: '404 not found' }, null, 2)
 })
 
