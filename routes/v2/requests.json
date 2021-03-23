@@ -1,14 +1,20 @@
 {
   "default" : {
+    "version": "2",
     "name": "Collection Tracker API",
-		"desc": "a simple API for providing controlling information on packages",
-		"links": [
-			{
-				"name": "accounts",
-				"desc": "a simple API for providing controlling information on packages",
-				"href": "/accounts"
-			}
-		],
+    "desc": "a simple API for providing controlling information on packages",
+    "links": [
+      {
+        "name": "accounts",
+        "desc": "controls the acccounts collection",
+        "href": "/accounts"
+      },
+      {
+        "name": "packages",
+        "desc": "controls the packages collection",
+        "href": "/packages"
+      }
+    ],
     "allows": "GET"
   },
   "accounts" : {

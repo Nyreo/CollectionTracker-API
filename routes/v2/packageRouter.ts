@@ -10,11 +10,8 @@ const withPackageRouter = (VERSION: string, router: Router) => {
   const SUB_ROUTE = `/${VERSION}/packages`
 
   router
-    // get all packages - with optional filter
+    // get all packages
     .get(SUB_ROUTE, async context => {
-      // get optional params
-      console.log('-getting parms')
-      const params = helpers.getQuery(context, {mergeParams: true})
       // check if user has passed authroize header
       console.log('-fetching token')
       const token = context.request.headers.get('Authorization')
@@ -29,15 +26,10 @@ const withPackageRouter = (VERSION: string, router: Router) => {
         // verify
         if(!token) throw new Error('Invalid token')
         await verifyToken(token)
-
-        let filter = {}
-        // check if tracking number was provided
-        if(params.trackingnumber) {
-          filter = {...filter, _id: new Bson.ObjectId(params.trackingnumber) }
-        }
+        
         // get packages
         console.log('-getting packages')
-        const packages = await getPackages(filter);
+        const packages = await getPackages();
 
         console.log('-responding')
         // set response status
