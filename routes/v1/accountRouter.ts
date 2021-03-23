@@ -3,8 +3,6 @@ import { Router, Status } from 'https://deno.land/x/oak/mod.ts'
 import { register } from '../../modules/accounts.ts'
 import { getRequestInfo, verifyToken } from '../../modules/util.ts'
 
-const router: Router = new Router()
-
 const SUB_ROUTE='/accounts'
 
 const withAccountRouter = (router: Router) => {

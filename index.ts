@@ -5,7 +5,10 @@ import { parse } from 'https://deno.land/std/flags/mod.ts'
 // dotenv
 import "https://deno.land/x/dotenv/load.ts";
 
-import router from './routes/v1/hub.ts'
+// routers
+import baseRouter from './routes/base/hub.ts'
+import v1Router from './routes/v1/hub.ts'
+import v2Router from './routes/v2/hub.ts'
 
 const defaultPort = 8080
 const { args } = Deno
@@ -46,9 +49,9 @@ app.use(async (ctx, next) => {
   ctx.response.headers.set("X-Response-Time", `${ms}ms`);
 });
 
-// routes
-app.use(router.routes())
-app.use(router.allowedMethods())
+// routes -- includes all versioning routes
+app.use(baseRouter.routes())
+app.use(baseRouter.allowedMethods())
 
 // static content
 // app.use(async (context, next) => {

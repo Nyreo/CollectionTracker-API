@@ -11,27 +11,21 @@ import withPackageRouter from './packageRouter.ts'
 
 const VERSION_URI = '/v1'
 
-const router: Router = new Router()
+const withV1Router = (router: Router) => {
+  router.get(`${VERSION_URI}/`, context => {
+    const host = context.request.url.host
+  
+    const data = getRequestInfo("default", host);
+  
+    context.response.headers.set('Allow', data.allows);
+  
+    context.response.status = Status.OK
+    context.response.body = JSON.stringify(data, null, 2)
+  })
 
-router.get(`${VERSION_URI}/`, context => {
-	const host = context.request.url.host
+  // add external routes
+  withAccountRouter(router)
+  withPackageRouter(router)
+}
 
-  const data = getRequestInfo("default", host);
-
-  context.response.headers.set('Allow', data.allows);
-
-	context.response.status = Status.OK
-	context.response.body = JSON.stringify(data, null, 2)
-})
-
-// add external routes
-withAccountRouter(router)
-withPackageRouter(router)
-
-// default route to 404 not found
-router.get(`${VERSION_URI}/(.*)`, context => {     
-	context.response.body = JSON.stringify({ status: '404 not found' }, null, 2)
-})
-
-
-export default router
+export default withV1Router
