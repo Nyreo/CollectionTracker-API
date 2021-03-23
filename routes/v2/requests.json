@@ -1,6 +1,6 @@
 {
   "default" : {
-    "version": "1",
+    "version": "2",
     "name": "Collection Tracker API",
     "desc": "a simple API for providing controlling information on packages",
     "links": [

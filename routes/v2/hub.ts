@@ -11,7 +11,7 @@ import withPackageRouter from './packageRouter.ts'
 
 const VERSION = "v2"
 
-const withV1Router = (router: Router) => {
+const withV2Router = (router: Router) => {
   router.get(`/${VERSION}`, context => {
     const host = context.request.url.host
   
@@ -28,4 +28,4 @@ const withV1Router = (router: Router) => {
   withPackageRouter(VERSION, router)
 }
 
-export default withV1Router
+export default withV2Router
