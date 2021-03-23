@@ -14,7 +14,7 @@ const router: Router = new Router()
 router.get(`/`, context => {
 	const host = context.request.url.host
 
-  const data = getRequestInfo("default", host);
+  const data = getRequestInfo("v0", "default", host);
 
   context.response.headers.set('Allow', data.allows);
 

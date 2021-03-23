@@ -22,9 +22,9 @@ export function extractCredentials(token: string): loginConfig {
 	return { username, password }
 }
 
-export function getRequestInfo(request: string, host?: string): requestInfo {
+export function getRequestInfo(VERSION: string, request: string, host?: string): requestInfo {
   // get base info
-  const info: requestInfo = requests[request];
+  const info: requestInfo = requests[VERSION][request];
 
   // customise links to include host - if they exist
   if(info.links) {

@@ -5,9 +5,9 @@ import { extractCredentials, getRequestInfo, verifyToken } from '../../modules/u
 
 import { getPackages, postPackage, patchPackage } from '../../modules/packages.ts';
 
-const withPackageRouter = (router: Router) => {
+const withPackageRouter = (VERSION: string, router: Router) => {
 
-  const SUB_ROUTE = '/packages'
+  const SUB_ROUTE = `/${VERSION}/packages`
 
   router
     // get all packages
@@ -19,7 +19,7 @@ const withPackageRouter = (router: Router) => {
     
       // get info from file
       console.log('-fetching info')
-      const info = getRequestInfo("packages")
+      const info = getRequestInfo(VERSION, "packages")
       context.response.headers.set('Allow', info.allows)
     
       try {
@@ -64,7 +64,7 @@ const withPackageRouter = (router: Router) => {
       console.log(`auth: ${token}`)
 
       // get info from file
-      const info = getRequestInfo("packages")
+      const info = getRequestInfo(VERSION, "packages")
       context.response.headers.set('Allow', info.allows)
     
       try {
@@ -119,7 +119,7 @@ const withPackageRouter = (router: Router) => {
     
       // get info from file
       console.log('-fetching info')
-      const info = getRequestInfo("packages/<username>")
+      const info = getRequestInfo(VERSION, "packages/<username>")
       context.response.headers.set('Allow', info.allows)
     
       try {
@@ -179,7 +179,7 @@ const withPackageRouter = (router: Router) => {
     
       // get info from file
       console.log('-fetching info')
-      const info = getRequestInfo("packages/tracking/<trackingnumber>")
+      const info = getRequestInfo(VERSION, "packages/tracking/<trackingnumber>")
       context.response.headers.set('Allow', info.allows)
     
       try {
@@ -228,7 +228,7 @@ const withPackageRouter = (router: Router) => {
     
       // get info from file
       console.log('-fetching info')
-      const info = getRequestInfo("packages/tracking/<trackingnumber>")
+      const info = getRequestInfo(VERSION, "packages/tracking/<trackingnumber>")
       context.response.headers.set('Allow', info.allows)
     
       try {

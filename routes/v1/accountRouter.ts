@@ -3,9 +3,10 @@ import { Router, Status } from 'https://deno.land/x/oak/mod.ts'
 import { register } from '../../modules/accounts.ts'
 import { getRequestInfo, verifyToken } from '../../modules/util.ts'
 
-const SUB_ROUTE='/accounts'
+const withAccountRouter = (VERSION: string, router: Router) => {
 
-const withAccountRouter = (router: Router) => {
+  const SUB_ROUTE=`/${VERSION}/accounts`
+
   router 
     .get(SUB_ROUTE, async context => {
       // check if user has passed authroize header
@@ -15,7 +16,7 @@ const withAccountRouter = (router: Router) => {
     
       console.log('-fetching info')
       // get info from file
-      const info = getRequestInfo("accounts")
+      const info = getRequestInfo(VERSION, "accounts")
       context.response.headers.set('Allow', info.allows)
     
       try {
@@ -50,7 +51,7 @@ const withAccountRouter = (router: Router) => {
     })
     .post(SUB_ROUTE, async context => {
       // get info from file
-      const info = getRequestInfo("accounts")
+      const info = getRequestInfo(VERSION, "accounts")
       context.response.headers.set('Allow', info.allows)
     
       try {

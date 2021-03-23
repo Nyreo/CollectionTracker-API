@@ -9,13 +9,13 @@ import { getRequestInfo } from '../../modules/util.ts'
 import withAccountRouter from './accountRouter.ts'
 import withPackageRouter from './packageRouter.ts'
 
-const VERSION_URI = '/v1'
+const VERSION = "v1"
 
 const withV1Router = (router: Router) => {
-  router.get(`${VERSION_URI}/`, context => {
+  router.get(`/${VERSION}`, context => {
     const host = context.request.url.host
   
-    const data = getRequestInfo("default", host);
+    const data = getRequestInfo(VERSION, "default", host);
   
     context.response.headers.set('Allow', data.allows);
   
@@ -24,8 +24,8 @@ const withV1Router = (router: Router) => {
   })
 
   // add external routes
-  withAccountRouter(router)
-  withPackageRouter(router)
+  withAccountRouter(VERSION, router)
+  withPackageRouter(VERSION, router)
 }
 
 export default withV1Router
