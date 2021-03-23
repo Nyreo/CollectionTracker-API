@@ -2,7 +2,6 @@ import db from './db.ts'
 import { Bson } from "https://deno.land/x/mongo@v0.21.0/mod.ts";
 
 import { PackageSchema, DeliveryDetailsSchema } from '../interfaces/db_interfaces.ts'
-import { DeliveryDetailsSchema, DeliveryDetailsSchema, DeliveryDetailsSchema } from '../interfaces/db_interfaces';
 
 const availableStatus = ['not-dispatched', 'in-transit', 'delivered']
 
@@ -58,16 +57,44 @@ export async function patchPickupPackage(trackingNumber: Bson.ObjectId, username
   return _package
 }
 
-export async function patchDeliverPackage(trackingNumber: Bson.ObjectId, deliveryDetails: DeliveryDetailsSchema): Promise<PackageSchema> {
+export async function patchPackage(trackingNumber: Bson.ObjectId, status: string, username: string): Promise<PackageSchema> {
+
+  const packages = db.collection<PackageSchema>("packages");
+  status = status.toLowerCase()
+
+  if(availableStatus.indexOf(status) === -1) throw new Error(`Invalid status value, accepted values: ${availableStatus}`)
+
+  // if changing to dispatched, set courier value asw well 
+  let setFields: Record<string, unknown> = {status}
+  if(status === 'in-transit') {
+    setFields = {...setFields, courier: username}
+  }
+
+  const { matchedCount, modifiedCount } = await packages.updateOne(
+    { _id : trackingNumber },
+    { $set : setFields}
+  )
+
+  if(matchedCount <= 0) throw new Error("A package with that tracking number does not exist.");
+  if(modifiedCount <= 0) throw new Error("No changes were made.");
+
+  // return record
+  //@ts-ignore // does not include noCursorTimeout in interface
+  const _package: PackageSchema = await packages.findOne({ _id: trackingNumber }, { noCursorTimeout:false })
+
+  return _package
+}
+
+export async function patchDeliverPackage(trackingNumber: Bson.ObjectId, username: string, deliveryDetails: DeliveryDetailsSchema): Promise<PackageSchema> {
 
   const packages = db.collection<PackageSchema>("packages");
   const status = 'delivered'
 
   // check if that package has already been selected
-  await checkAlreadySelected(trackingNumber)
+  await checkCourierAssignmenet(trackingNumber, username)
   
   // set fields to be changed
-  const setFields: Record<string, DeliveryDetailsSchema> = {
+  const setFields: Record<string, unknown> = {
     status,
     deliveryDetails
   }
@@ -99,4 +126,18 @@ async function checkAlreadySelected(trackingNumber: Bson.ObjectId) {
   console.log(count)
 
   if(count) throw new Error("A courier has already selected that package")
+}
+
+async function checkCourierAssignmenet(trackingNumber: Bson.ObjectId, username: string) {
+  const packages = db.collection<PackageSchema>("packages");
+
+  // check if courier is assigned to the specified package
+  const count = await packages.count({
+    _id: trackingNumber,
+    courier: username
+  })
+
+  console.log(count)
+
+  if(!count) throw new Error("That package has been selected by another courier.")
 }

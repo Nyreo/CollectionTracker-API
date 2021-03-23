@@ -168,10 +168,9 @@ const withPackageRouter = (VERSION: string, router: Router) => {
           // validate delivery details
           if(!data.deliveryDetails) throw new Error("You have not provided any delivery details");
           
-          _package = await patchDeliverPackage(new Bson.ObjectId(params.trackingnumber), data.deliveryDetails);
+          _package = await patchDeliverPackage(new Bson.ObjectId(params.trackingnumber), username, data.deliveryDetails);
         }
         
-
         console.log('-responding')
         // set response status
         context.response.status = Status.OK
