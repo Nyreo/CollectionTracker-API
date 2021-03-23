@@ -3,7 +3,7 @@ import { Router, Status } from 'https://deno.land/x/oak/mod.ts'
 // status codes: https://deno.land/std@0.84.0/http/http_status.ts
 // import { upload } from 'https://cdn.deno.land/oak_upload_middleware/versions/v2/raw/mod.ts'
 
-import { getRequestInfo } from '../../modules/util.ts'
+import { getRequestInfo } from './modules/util.ts'
 
 // imported routers
 import withAccountRouter from './accountRouter.ts'
