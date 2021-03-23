@@ -1,7 +1,7 @@
 import { Router, Status, helpers } from 'https://deno.land/x/oak/mod.ts'
 import { Bson } from "https://deno.land/x/mongo@v0.21.0/mod.ts";
 
-import { extractCredentials, getRequestInfo, verifyToken } from '../../modules/util.ts'
+import { getRequestInfo, verifyToken } from '../../modules/util.ts'
 
 import { getPackages, postPackage, patchPackage } from '../../modules/packages.ts';
 
