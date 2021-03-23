@@ -55,7 +55,7 @@
     "queries": [
       {
         "name": "trackingnumber",
-        "desc": "gets a specific package based on the tracking number"
+        "desc": "queries the collection based on the tracking number"
       }
     ],
     "allows": "GET, POST, PATCH"

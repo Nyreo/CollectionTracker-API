@@ -116,6 +116,71 @@ const withPackageRouter = (VERSION: string, router: Router) => {
         context.response.body = JSON.stringify(msg, null, 2)
       }
     })
+    // update package status
+    .patch(SUB_ROUTE, async context => {
+      // get optional params
+      console.log('-getting parms')
+      const params = helpers.getQuery(context, {mergeParams: true})
+      // check if user has passed authroize header
+      console.log('-fetching token')
+      const token = context.request.headers.get('Authorization')
+      console.log(`auth: ${token}`)
+    
+      // get info from file
+      console.log('-fetching info')
+      const info = getRequestInfo(VERSION, "packages")
+      context.response.headers.set('Allow', info.allows)
+    
+      try {
+        const body  = await context.request.body()
+        const type = await body.type
+    
+        // check datatypes of submitted data
+        const data = (type != 'json') ? JSON.parse(await body.value) : await body.value;
+        
+        console.log(data)
+        // verify
+        if(!token) throw new Error('Invalid token')
+        const {username} = await verifyToken(token)
+
+        // check trackingNumber was provided
+        if(!params.trackingnumber) throw new Error("Tracking number was not provided")
+        
+        // check length
+        if(params.trackingnumber.length !== 24) throw new Error("Tracking number is not the correct length.");
+
+        // check status was provided
+        if(!data.status) throw new Error("Status value is missing")
+
+        // patch packages
+        console.log(`-patching package status associated with trackingnumber: ${params.trackingnumber} to ${data.status}`)
+        
+        const _package = await patchPackage(new Bson.ObjectId(params.trackingnumber), data.status, username);
+
+        console.log('-responding')
+        // set response status
+        context.response.status = Status.OK
+    
+        // create response msg
+        const msg = {
+          info,
+          status: 'success',
+          data: _package
+        }
+        context.response.body = JSON.stringify(msg, null, 2)
+    
+      } catch(err) {
+        // if error occured, set status to unauthorized, send message
+        context.response.status = Status.Unauthorized
+        const msg = {
+          info,
+          status: 'Unauthorized',
+          msg: 'This route requires Basic Access Authentication',
+          err: err.message
+        }
+        context.response.body = JSON.stringify(msg, null, 2)
+      }
+    })
     // packages by username
     .get<{username: string}>(`${SUB_ROUTE}/:username`, async context => {
       const params = helpers.getQuery(context, {mergeParams: true})
@@ -177,119 +242,6 @@ const withPackageRouter = (VERSION: string, router: Router) => {
         context.response.body = JSON.stringify(msg, null, 2)
       }
     })
-    // get package by trackingnumber
-    .get<{trackingnumber: string}>(`${SUB_ROUTE}/tracking/:trackingnumber`, async context => {
-      const trackingNumber = context.params.trackingnumber
-      // check if user has passed authroize header
-      console.log('-fetching token')
-      const token = context.request.headers.get('Authorization')
-      console.log(`auth: ${token}`)
-    
-      // get info from file
-      console.log('-fetching info')
-      const info = getRequestInfo(VERSION, "packages/tracking/<trackingnumber>")
-      context.response.headers.set('Allow', info.allows)
-    
-      try {
-        // verify
-        if(!token) throw new Error('Invalid token')
-        await verifyToken(token)
-
-        // check trackingNumber was provided
-        if(!trackingNumber) throw new Error("Tracking number was not provided")
-        
-        // get packages
-        console.log(`-getting package associated with trackingnumber: ${trackingNumber}`)
-        const _package = (await getPackages({_id: new Bson.ObjectId(trackingNumber)}))[0];
-
-        console.log('-responding')
-        // set response status
-        context.response.status = Status.OK
-    
-        // create response msg
-        const msg = {
-          info,
-          status: 'success',
-          data: _package
-        }
-        context.response.body = JSON.stringify(msg, null, 2)
-    
-      } catch(err) {
-        // if error occured, set status to unauthorized, send message
-        context.response.status = Status.Unauthorized
-        const msg = {
-          info,
-          status: 'Unauthorized',
-          msg: 'This route requires Basic Access Authentication',
-          err: err.message
-        }
-        context.response.body = JSON.stringify(msg, null, 2)
-      }
-    })
-    // update package status
-    .patch(`${SUB_ROUTE}/tracking/:trackingnumber`, async context => {
-      const trackingNumber = context.params.trackingnumber
-      // check if user has passed authroize header
-      console.log('-fetching token')
-      const token = context.request.headers.get('Authorization')
-      console.log(`auth: ${token}`)
-    
-      // get info from file
-      console.log('-fetching info')
-      const info = getRequestInfo(VERSION, "packages/tracking/<trackingnumber>")
-      context.response.headers.set('Allow', info.allows)
-    
-      try {
-        const body  = await context.request.body()
-        const type = await body.type
-    
-        // check datatypes of submitted data
-        const data = (type != 'json') ? JSON.parse(await body.value) : await body.value;
-        
-        console.log(data)
-        // verify
-        if(!token) throw new Error('Invalid token')
-        const {username} = await verifyToken(token)
-
-        // check trackingNumber was provided
-        if(!trackingNumber) throw new Error("Tracking number was not provided")
-        
-        // check status was provided
-        if(!data.status) throw new Error("Status value is missing")
-
-        // check length
-        if(trackingNumber.length !== 24) throw new Error("Tracking number is not the correct length.");
-
-        // patch packages
-        console.log(`-patching package status associated with trackingnumber: ${trackingNumber} to ${data.status}`)
-        
-        const _package = await patchPackage(new Bson.ObjectId(trackingNumber), data.status, username);
-
-        console.log('-responding')
-        // set response status
-        context.response.status = Status.OK
-    
-        // create response msg
-        const msg = {
-          info,
-          status: 'success',
-          data: _package
-        }
-        context.response.body = JSON.stringify(msg, null, 2)
-    
-      } catch(err) {
-        // if error occured, set status to unauthorized, send message
-        context.response.status = Status.Unauthorized
-        const msg = {
-          info,
-          status: 'Unauthorized',
-          msg: 'This route requires Basic Access Authentication',
-          err: err.message
-        }
-        context.response.body = JSON.stringify(msg, null, 2)
-      }
-    })
-    
 }
 
 export default withPackageRouter
