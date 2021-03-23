@@ -6,6 +6,13 @@ export interface AccountSchema {
   userType: string
 }
 
+export interface DeliveryDetailsSchema {
+  time: number
+  lat: number
+  lng: number
+  handedTo: string
+}
+
 export interface PackageSchema {
   _id: { $oid: string }
   status: string
@@ -16,4 +23,6 @@ export interface PackageSchema {
   weight: number
   destPostcode: string
   sendPostcode: string
+  courier? : string
+  deliveryDetails? : DeliveryDetailsSchema
 }
