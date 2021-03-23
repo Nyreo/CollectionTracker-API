@@ -35,6 +35,8 @@ export async function patchPackage(trackingNumber: Bson.ObjectId, status: string
 
   if(availableStatus.indexOf(status) === -1) throw new Error(`Invalid status value, accepted values: ${availableStatus}`)
 
+  // check if that package has already been selected
+  await checkAlreadySelected(trackingNumber, username)
   // if changing to dispatched, set courier value asw well 
   let setFields: Record<string, unknown> = {status}
   if(status === 'in-transit') {
@@ -56,4 +58,20 @@ export async function patchPackage(trackingNumber: Bson.ObjectId, status: string
   const _package: PackageSchema = await packages.findOne({ _id: trackingNumber }, { noCursorTimeout:false })
 
   return _package
+}
+
+// checks if package has already been selected by courier
+async function checkAlreadySelected(trackingNumber: Bson.ObjectId, courierName: string) {
+  const packages = db.collection<PackageSchema>("packages");
+
+  const count = await packages.count({
+    _id: trackingNumber,
+    courier: {
+      $exists: true
+    }
+  })
+
+  console.log(count)
+
+  if(count) throw new Error("A courier has already selected that package")
 }
