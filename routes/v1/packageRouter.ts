@@ -12,6 +12,8 @@ const withPackageRouter = (VERSION: string, router: Router) => {
   router
     // get all packages - with optional filter
     .get(SUB_ROUTE, async context => {
+      // get host
+      const HOST = context.request.url.host
       // get optional params
       console.log('-getting parms')
       const params = helpers.getQuery(context, {mergeParams: true})
@@ -22,7 +24,7 @@ const withPackageRouter = (VERSION: string, router: Router) => {
     
       // get info from file
       console.log('-fetching info')
-      const info = getRequestInfo(VERSION, "packages")
+      const info = getRequestInfo(VERSION, "packages", HOST)
       context.response.headers.set('Allow', info.allows)
     
       try {
@@ -65,14 +67,15 @@ const withPackageRouter = (VERSION: string, router: Router) => {
     })
     // add new package
     .post(SUB_ROUTE, async context => {
-
+      // get host
+      const HOST = context.request.url.host
       // check if user has passed authroize header
       console.log('-fetching token')
       const token = context.request.headers.get('Authorization')
       console.log(`auth: ${token}`)
 
       // get info from file
-      const info = getRequestInfo(VERSION, "packages")
+      const info = getRequestInfo(VERSION, "packages", HOST)
       context.response.headers.set('Allow', info.allows)
     
       try {
@@ -118,6 +121,8 @@ const withPackageRouter = (VERSION: string, router: Router) => {
     })
     // update package status
     .patch(SUB_ROUTE, async context => {
+      // get host
+      const HOST = context.request.url.host
       // get optional params
       console.log('-getting parms')
       const params = helpers.getQuery(context, {mergeParams: true})
@@ -128,7 +133,7 @@ const withPackageRouter = (VERSION: string, router: Router) => {
     
       // get info from file
       console.log('-fetching info')
-      const info = getRequestInfo(VERSION, "packages")
+      const info = getRequestInfo(VERSION, "packages", HOST)
       context.response.headers.set('Allow', info.allows)
     
       try {
@@ -183,6 +188,9 @@ const withPackageRouter = (VERSION: string, router: Router) => {
     })
     // packages by username
     .get<{username: string}>(`${SUB_ROUTE}/:username`, async context => {
+      // get host
+      const HOST = context.request.url.host
+      // get params
       const params = helpers.getQuery(context, {mergeParams: true})
 
       // check if user has passed authroize header
@@ -192,7 +200,7 @@ const withPackageRouter = (VERSION: string, router: Router) => {
     
       // get info from file
       console.log('-fetching info')
-      const info = getRequestInfo(VERSION, "packages/<username>")
+      const info = getRequestInfo(VERSION, "packages/<username>", HOST)
       context.response.headers.set('Allow', info.allows)
     
       try {

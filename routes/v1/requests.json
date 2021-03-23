@@ -47,7 +47,7 @@
     },
     "links": [
       {
-        "name": "username",
+        "name": "<username>",
         "desc": "gets all packages for a specific user",
         "href": "/<username>"
       }
