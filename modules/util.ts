@@ -11,7 +11,7 @@ const v1Requests = JSON.parse(Deno.readTextFileSync('./routes/v1/requests.json')
 const v2Requests = JSON.parse(Deno.readTextFileSync('./routes/v2/requests.json'));
 const v3Requests = JSON.parse(Deno.readTextFileSync('./routes/v3/requests.json'));
 
-const requests: Record<string, any> = {
+const requests: Record<string, Record<string, requestInfo>> = {
   "v0": baseRequests,
   "v1": v1Requests,
   "v2": v2Requests,
