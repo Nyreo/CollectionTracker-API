@@ -45,3 +45,20 @@ The parcel details now appear on the courier's homepage but only for the parcels
 2. The destination postcode.
 3. The weight of the parcel in Kg.
 4. How many hours have elapsed since the parcel was added to the system.
+
+## Stage 2 [complete]
+
+Now lets complete the delivery process.
+
+When the courier arrives at the destination address they scan the parcel (enter the tracking number into the box on the _Homepage_ again). If the tracking number matches an item on the homescreen the courier is taken to the _Delivery Screen_ where they enter:
+
+1. The name of the person accepting the parcel.
+2. An uploaded signature from the recipient.
+
+In addition to the data entered by the courier, the system should automatically capture and store:
+
+1. The current date and time.
+2. The current location (longitude and latitude).
+3. The parcel status should now be changed to `delivered` which means this should be flagged up on the homepage of the person posting the item.
+
+---
