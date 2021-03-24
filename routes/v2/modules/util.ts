@@ -59,14 +59,27 @@ export async function verifyToken(token: string) {
   return userDetails
 }
 
-export function saveFile(base64String: string, username: string): void {
+export function saveFile(base64String: string, trackingNumber: string): void {
 	console.log('save file')
 	const [ metadata, base64Image ] = base64String.split(';base64,')
 	console.log(metadata)
 	const extension = metadata.split('/').pop()
 	console.log(extension)
-	const filename = `${username}-${Date.now()}.${extension}`
+	const filename = `${trackingNumber}-${Date.now()}.${extension}`
 	console.log(filename)
-	Base64.fromBase64String(base64Image).toFile(`./static/uploads/${filename}`)
+
+  const filelocation = `./static/uploads/${filename}`
+  console.log(filelocation)
+	Base64.fromBase64String(base64Image).toFile(filelocation)
 	console.log('file saved')
+}
+
+export function validateTrackingNumber(trackingnumber: string) : void {
+  // throws errors for appropriate validation on tracking number
+  // check trackingNumber was provided
+  if(!trackingnumber) throw new Error("Tracking number was not provided")
+        
+  // check length
+  if(trackingnumber.length !== 24) throw new Error("Tracking number is not the correct length.");
+
 }
