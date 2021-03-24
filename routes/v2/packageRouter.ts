@@ -1,7 +1,7 @@
 import { Router, Status, helpers } from 'https://deno.land/x/oak/mod.ts'
 import { Bson } from "https://deno.land/x/mongo@v0.21.0/mod.ts";
 
-import { getRequestInfo, verifyToken } from './modules/util.ts'
+import { getRequestInfo, verifyToken, saveFile, validateTrackingNumber } from './modules/util.ts'
 
 import { getPackages, postPackage, patchDeliverPackage, patchPickupPackage } from './modules/packages.ts';
 
@@ -148,12 +148,8 @@ const withPackageRouter = (VERSION: string, router: Router) => {
         if(!token) throw new Error('Invalid token')
         const {username} = await verifyToken(token)
 
-        // check trackingNumber was provided
-        if(!params.trackingnumber) throw new Error("Tracking number was not provided")
+        validateTrackingNumber(params.trackingNumber)
         
-        // check length
-        if(params.trackingnumber.length !== 24) throw new Error("Tracking number is not the correct length.");
-
         // check status was provided
         if(!data.status) throw new Error("Status value is missing")
 
@@ -244,6 +240,63 @@ const withPackageRouter = (VERSION: string, router: Router) => {
           info,
           status: 'success',
           data: packages
+        }
+        context.response.body = JSON.stringify(msg, null, 2)
+    
+      } catch(err) {
+        // if error occured, set status to unauthorized, send message
+        context.response.status = Status.Unauthorized
+        const msg = {
+          info,
+          status: 'Unauthorized',
+          msg: 'This route requires Basic Access Authentication',
+          err: err.message
+        }
+        context.response.body = JSON.stringify(msg, null, 2)
+      }
+    })
+    // upload signature
+    .post(`${SUB_ROUTE}/signatures`, async context => {
+      // get host
+      const HOST = context.request.url.host
+
+      // check if user has passed authroize header
+      console.log('-fetching token')
+      const token = context.request.headers.get('Authorization')
+      console.log(`auth: ${token}`)
+    
+      // get info from file
+      console.log('-fetching info')
+      const info = getRequestInfo(VERSION, "packages/signatures", HOST)
+      context.response.headers.set('Allow', info.allows)
+    
+      try {
+        const body  = await context.request.body()
+        const type = await body.type
+
+        // check datatypes of submitted data
+        const data = (type != 'json') ? JSON.parse(await body.value) : await body.value;
+        
+        console.log(data)
+        // verify
+        if(!token) throw new Error('Invalid token')
+        await verifyToken(token)
+
+        validateTrackingNumber(data.trackingNumber)
+        // check image was provided
+        if(!data.signature64) throw new Error("Signature was not provided.")
+      
+        console.log(`-uploading signature for : ${data.trackingNumber}`)
+        saveFile(data.signature64, data.trackingNumber)
+
+        console.log('-responding')
+        // set response status
+        context.response.status = Status.Created
+    
+        // create response msg
+        const msg = {
+          info,
+          status: 'success',
         }
         context.response.body = JSON.stringify(msg, null, 2)
     
