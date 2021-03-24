@@ -126,6 +126,7 @@ const withPackageRouter = (VERSION: string, router: Router) => {
       // get optional params
       console.log('-getting parms')
       const params = helpers.getQuery(context, {mergeParams: true})
+      console.log(params)
       // check if user has passed authroize header
       console.log('-fetching token')
       const token = context.request.headers.get('Authorization')
@@ -148,7 +149,7 @@ const withPackageRouter = (VERSION: string, router: Router) => {
         if(!token) throw new Error('Invalid token')
         const {username} = await verifyToken(token)
 
-        validateTrackingNumber(params.trackingNumber)
+        validateTrackingNumber(params.trackingnumber)
         
         // check status was provided
         if(!data.status) throw new Error("Status value is missing")
