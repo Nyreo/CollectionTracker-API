@@ -34,20 +34,26 @@
   "packages" : {
     "name": "packages",
     "desc": "all requested packages",
-    "response data schema": {
+    "response schema": {
       "_id" : {
         "pseudo": "trackingNumber",
         "type:" : "string"
       },
-      "courier" : "string",
+      "courier?" : "string",
       "status" : "string",
-      "addTime" : "number",
+      "date" : "number",
       "username" : "string",
       "address" : "string",
       "recpName" : "string",
       "weight" : "number",
       "destPostcode" : "string",
-      "sendPostcode" : "string"
+      "sendPostcode" : "string",
+      "deliveryDetails": {
+        "time": "number",
+        "lat" : "number",
+        "lng" : "number",
+        "handedTo" : "string"
+      }
     },
     "links": [
       {
@@ -79,20 +85,27 @@
         "pseudo": "trackingNumber",
         "type:" : "string"
       },
-      "courier" : "string",
+      "courier?" : "string",
       "status" : "string",
-      "addTime" : "number",
+      "date" : "number",
       "username" : "string",
       "address" : "string",
       "recpName" : "string",
       "weight" : "number",
       "destPostcode" : "string",
-      "sendPostcode" : "string"
+      "sendPostcode" : "string",
+      "deliveryDetails?": {
+        "time": "number",
+        "lat" : "number",
+        "lng" : "number",
+        "handedTo" : "string"
+      }
     },
     "queries": [
       {
         "name": "courier",
-        "desc": "determines whether or not the requesting user is a courier"
+        "desc": "determines whether or not the requesting user is a courier",
+        "type": "boolean"
       }
     ],
     "allows": "GET"
