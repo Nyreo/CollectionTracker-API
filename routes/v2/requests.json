@@ -57,31 +57,44 @@
     },
     "links": [
       {
-        "name": ":username",
-        "desc": "gets all packages for a specific user",
-        "href": "/<username>"
+        "name": ":trackingnumber",
+        "desc": "isolates individual package based on tracking number",
+        "href": "/:trackingnumber"
       },
       {
         "name": "signatures",
-        "desc": "handles signatures collection",
+        "desc": "provides access to the signature collection parented by packages",
         "href": "/signatures"
       }
     ],
     "queries": [
       {
-        "name": "trackingnumber",
-        "desc": "filters packages collection by tracking number",
-        "type": "string",
-        "required length" : 24
+        "name": "username",
+        "desc": "gets all packages for a given user",
+        "type": "string"
+      },
+      {
+        "name": "courier",
+        "desc": "determines whether or not the requesting user is a courier",
+        "type": "boolean"
       }
     ],
     "allows": "GET, POST"
   },
-  "packages/<username>": {
-    "name": "packages/<username>",
-    "desc": "all packages for a specific user",
+  "packages/signatures": {
+    "name" : "packages/:trackingnumber/signature",
+    "desc" : "method for uploading images for a given package",
+    "request_schema": {
+      "signature64" : "string",
+      "trackingNumber": "string"
+    },
+    "allows": "POST"
+  },
+  "packages/:trackingnumber": {
+    "name": "packages/:trackingnumber",
+    "desc": "isolates individual package based on tracking number",
     "request schema": {
-      "username": "string"
+      "trackingnumber": "string"
     },
     "response schema": {
       "_id" : {
@@ -104,22 +117,6 @@
         "handedTo" : "string"
       }
     },
-    "queries": [
-      {
-        "name": "courier",
-        "desc": "determines whether or not the requesting user is a courier",
-        "type": "boolean"
-      }
-    ],
-    "allows": "GET"
-  },
-  "packages/signatures": {
-    "name" : "packages/signatures",
-    "desc" : "method for uploading images to the signature collection",
-    "request_schema": {
-      "signature64" : "string",
-      "trackingNumber": "string"
-    },
-    "allows": "POST"
+    "allows": "GET, PATCH"
   }
 }

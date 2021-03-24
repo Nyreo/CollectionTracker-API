@@ -32,17 +32,16 @@ const withPackageRouter = (VERSION: string, router: Router) => {
         if(!token) throw new Error('Invalid token')
         await verifyToken(token)
 
-        const filter = {}
-        // check if tracking number was provided
-        if(params.trackingnumber) {
-          validateTrackingNumber(params.trackingnumber); 
-          filter['_id'] = new Bson.ObjectId(params.trackingnumber);
-        }
+        const filter: Record<string, unknown> = {}
+        
+        if(params.courier && params.courier.toLowerCase() === 'true') {
+          filter.courier = params.username;
+          filter.status = {
+            $ne: "delivered"
+          }
+        } else filter['username'] = params.username;
 
-        // check if username was passed
-        if(params.username) {
-          filter['username'] = params.username
-        }
+        console.log(filter);
 
         // get packages
         console.log('-getting packages')
@@ -126,181 +125,6 @@ const withPackageRouter = (VERSION: string, router: Router) => {
         context.response.body = JSON.stringify(msg, null, 2)
       }
     })
-    // update package status
-    .patch(SUB_ROUTE, async context => {
-      // get host
-      const HOST = context.request.url.host
-      // get optional params
-      console.log('-getting parms')
-      const params = helpers.getQuery(context, {mergeParams: true})
-      console.log(params)
-      // check if user has passed authroize header
-      console.log('-fetching token')
-      const token = context.request.headers.get('Authorization')
-      console.log(`auth: ${token}`)
-    
-      // get info from file
-      console.log('-fetching info')
-      const info = getRequestInfo(VERSION, "packages", HOST)
-      context.response.headers.set('Allow', info.allows)
-    
-      try {
-        const body  = await context.request.body()
-        const type = await body.type
-    
-        // check datatypes of submitted data
-        const data = (type != 'json') ? JSON.parse(await body.value) : await body.value;
-        
-        console.log(data)
-        // verify
-        if(!token) throw new Error('Invalid token')
-        const {username} = await verifyToken(token)
-
-        validateTrackingNumber(params.trackingnumber)
-        
-        // check status was provided
-        if(!data.status) throw new Error("Status value is missing")
-
-        // patch packages
-        console.log(`-patching package status associated with trackingnumber: ${params.trackingnumber} to ${data.status}`)
-        
-        let _package;
-
-        if(data.status === 'in-transit') {
-          _package = await patchPickupPackage(new Bson.ObjectId(params.trackingnumber), username);
-        } else if(data.status === 'delivered') {
-          // validate delivery details
-          if(!data.deliveryDetails) throw new Error("You have not provided any delivery details");
-          
-          _package = await patchDeliverPackage(new Bson.ObjectId(params.trackingnumber), username, data.deliveryDetails);
-        }
-        
-        console.log('-responding')
-        // set response status
-        context.response.status = Status.OK
-    
-        // create response msg
-        const msg = {
-          info,
-          status: 'success',
-          data: _package
-        }
-        context.response.body = JSON.stringify(msg, null, 2)
-    
-      } catch(err) {
-        // if error occured, set status to unauthorized, send message
-        context.response.status = Status.Unauthorized
-        const msg = {
-          info,
-          status: 'Unauthorized',
-          msg: 'This route requires Basic Access Authentication',
-          err: err.message
-        }
-        context.response.body = JSON.stringify(msg, null, 2)
-      }
-    })
-    // packages by username
-    .get<{username: string}>(`${SUB_ROUTE}/:username`, async context => {
-      // get host
-      const HOST = context.request.url.host
-      // get params
-      const params = helpers.getQuery(context, {mergeParams: true})
-
-      // check if user has passed authroize header
-      console.log('-fetching token')
-      const token = context.request.headers.get('Authorization')
-      console.log(`auth: ${token}`)
-    
-      // get info from file
-      console.log('-fetching info')
-      const info = getRequestInfo(VERSION, "packages/<username>", HOST)
-      context.response.headers.set('Allow', info.allows)
-    
-      try {
-        // verify
-        if(!token) throw new Error('Invalid token')
-        await verifyToken(token)
-
-        // check username was provided
-        if(!params.username) throw new Error("Username was not provided")
-        
-        // get packages
-        console.log(`-getting package(s) for username: ${params.username}`)
-
-        let filter: Record<string, unknown> = { username: params.username};
-
-        // if courier supplied
-        if(params.courier) {
-          filter = params.courier.toLowerCase() === 'true' ? 
-            { courier : params.username, status : { $ne : 'delivered' } } 
-            : 
-            filter
-        }
-
-        const packages = await getPackages(filter);
-
-        console.log('-responding')
-        // set response status
-        context.response.status = Status.OK
-    
-        // create response msg
-        const msg = {
-          info,
-          status: 'success',
-          data: packages
-        }
-        context.response.body = JSON.stringify(msg, null, 2)
-    
-      } catch(err) {
-        // if error occured, set status to unauthorized, send message
-        context.response.status = Status.Unauthorized
-        const msg = {
-          info,
-          status: 'Unauthorized',
-          msg: 'This route requires Basic Access Authentication',
-          err: err.message
-        }
-        context.response.body = JSON.stringify(msg, null, 2)
-      }
-    })
-    // upload signature -- get info
-    .get(`${SUB_ROUTE}/signatures`, async context => {
-      // get host
-      const HOST = context.request.url.host
-
-      // check if user has passed authroize header
-      console.log('-fetching token')
-      const token = context.request.headers.get('Authorization')
-      console.log(`auth: ${token}`)
-    
-      // get info from file
-      console.log('-fetching info')
-      const info = getRequestInfo(VERSION, "packages/signatures", HOST)
-      context.response.headers.set('Allow', info.allows)
-    
-      try {
-        if(!token) throw new Error('Invalid token')
-        await verifyToken(token)
-
-        // create response msg
-        const msg = {
-          info,
-          status: 'success',
-        }
-        context.response.body = JSON.stringify(msg, null, 2)
-    
-      } catch(err) {
-        // if error occured, set status to unauthorized, send message
-        context.response.status = Status.Unauthorized
-        const msg = {
-          info,
-          status: 'Unauthorized',
-          msg: 'This route requires Basic Access Authentication',
-          err: err.message
-        }
-        context.response.body = JSON.stringify(msg, null, 2)
-      }
-    })
     // upload signature
     .post(`${SUB_ROUTE}/signatures`, async context => {
       // get host
@@ -346,6 +170,137 @@ const withPackageRouter = (VERSION: string, router: Router) => {
         }
         context.response.body = JSON.stringify(msg, null, 2)
     
+      } catch(err) {
+        // if error occured, set status to unauthorized, send message
+        context.response.status = Status.Unauthorized
+        const msg = {
+          info,
+          status: 'Unauthorized',
+          msg: 'This route requires Basic Access Authentication',
+          err: err.message
+        }
+        context.response.body = JSON.stringify(msg, null, 2)
+      }
+    })
+    // packages by username
+    .get<{trackingnumber: string}>(`${SUB_ROUTE}/:trackingnumber`, async context => {
+      // get host
+      const HOST = context.request.url.host
+      // get params
+      const params = helpers.getQuery(context, {mergeParams: true})
+
+      // check if user has passed authroize header
+      console.log('-fetching token')
+      const token = context.request.headers.get('Authorization')
+      console.log(`auth: ${token}`)
+    
+      // get info from file
+      console.log('-fetching info')
+      const info = getRequestInfo(VERSION, "packages/:trackingnumber", HOST)
+      context.response.headers.set('Allow', info.allows)
+    
+      try {
+        // verify
+        if(!token) throw new Error('Invalid token')
+        await verifyToken(token)
+
+        // check username was provided
+        validateTrackingNumber(params.trackingnumber);
+        
+        // get packages
+        console.log(`-getting package associated with tracking number: ${params.trackingnumber}`)
+
+        const filter = { _id: new Bson.ObjectId(params.trackingnumber)};
+
+        const packages = await getPackages(filter);
+
+        console.log('-responding')
+        // set response status
+        context.response.status = Status.OK
+    
+        // create response msg
+        const msg = {
+          info,
+          status: 'success',
+          data: packages
+        }
+        context.response.body = JSON.stringify(msg, null, 2)
+    
+      } catch(err) {
+        // if error occured, set status to unauthorized, send message
+        context.response.status = Status.Unauthorized
+        const msg = {
+          info,
+          status: 'Unauthorized',
+          msg: 'This route requires Basic Access Authentication',
+          err: err.message
+        }
+        context.response.body = JSON.stringify(msg, null, 2)
+      }
+    })
+    // update package status
+    .patch<{trackingnumber: string}>(`${SUB_ROUTE}/:trackingnumber`, async context => {
+      // get host
+      const HOST = context.request.url.host
+      // get optional params
+      console.log('-getting parms')
+      const params = helpers.getQuery(context, {mergeParams: true})
+      console.log(params)
+      // check if user has passed authroize header
+      console.log('-fetching token')
+      const token = context.request.headers.get('Authorization')
+      console.log(`auth: ${token}`)
+
+      // get info from file
+      console.log('-fetching info')
+      const info = getRequestInfo(VERSION, "packages/:trackingnumber", HOST)
+      context.response.headers.set('Allow', info.allows)
+
+      try {
+        const body  = await context.request.body()
+        const type = await body.type
+
+        // check datatypes of submitted data
+        const data = (type != 'json') ? JSON.parse(await body.value) : await body.value;
+        
+        console.log(data)
+        // verify
+        if(!token) throw new Error('Invalid token')
+        const {username, userType} = await verifyToken(token)
+
+        if(userType != 'courier') throw new Error("You need to be a courier to change the status of a package");
+
+        validateTrackingNumber(params.trackingnumber)
+        
+        // check status was provided
+        if(!data.status) throw new Error("You did not provide any status value")
+
+        // patch packages
+        console.log(`-patching package status associated with trackingnumber: ${params.trackingnumber} to ${data.status}`)
+        
+        let _package;
+
+        if(data.status === 'in-transit') {
+          _package = await patchPickupPackage(new Bson.ObjectId(params.trackingnumber), username);
+        } else if(data.status === 'delivered') {
+          // validate delivery details
+          if(!data.deliveryDetails) throw new Error("You have not provided any delivery details");
+          
+          _package = await patchDeliverPackage(new Bson.ObjectId(params.trackingnumber), username, data.deliveryDetails);
+        }
+        
+        console.log('-responding')
+        // set response status
+        context.response.status = Status.OK
+
+        // create response msg
+        const msg = {
+          info,
+          status: 'success',
+          data: _package
+        }
+        context.response.body = JSON.stringify(msg, null, 2)
+
       } catch(err) {
         // if error occured, set status to unauthorized, send message
         context.response.status = Status.Unauthorized
