@@ -6,7 +6,17 @@ import { Base64 } from 'https://deno.land/x/bb64/mod.ts'
 import { loginConfig, requestInfo, requestLinks } from '../interfaces/request_interfaces.ts'
 import { login } from './accounts.ts';
 
-const requests = JSON.parse(Deno.readTextFileSync('./requests.json'));
+const baseRequests = JSON.parse(Deno.readTextFileSync('./routes/base/requests.json'));
+const v1Requests = JSON.parse(Deno.readTextFileSync('./routes/v1/requests.json'));
+const v2Requests = JSON.parse(Deno.readTextFileSync('./routes/v2/requests.json'));
+const v3Requests = JSON.parse(Deno.readTextFileSync('./routes/v3/requests.json'));
+
+const requests: Record<string, Record<string, requestInfo>> = {
+  "v0": baseRequests,
+  "v1": v1Requests,
+  "v2": v2Requests,
+  "v3": v3Requests,
+}
 
 export function extractCredentials(token: string): loginConfig {
 	console.log('-checking auth')
@@ -22,14 +32,16 @@ export function extractCredentials(token: string): loginConfig {
 	return { username, password }
 }
 
-export function getRequestInfo(request: string, host?: string): requestInfo {
+export function getRequestInfo(VERSION: string, request: string, host?: string): requestInfo {
   // get base info
-  const info: requestInfo = requests[request];
+  const info: requestInfo = requests[VERSION][request];
+
+  const versionLink = VERSION === 'v0' ? '/' : `/${VERSION}/`
 
   // customise links to include host - if they exist
   if(info.links) {
     for(const link of info.links) {
-      link.href = host + link.href;
+      link.href = `${host}${versionLink}${request}/${link.name}`;
     }
   }
   return info;
@@ -49,14 +61,27 @@ export async function verifyToken(token: string) {
   return userDetails
 }
 
-export function saveFile(base64String: string, username: string): void {
+export function saveFile(base64String: string, trackingNumber: string): void {
 	console.log('save file')
 	const [ metadata, base64Image ] = base64String.split(';base64,')
 	console.log(metadata)
 	const extension = metadata.split('/').pop()
 	console.log(extension)
-	const filename = `${username}-${Date.now()}.${extension}`
+	const filename = `${trackingNumber}-${Date.now()}.${extension}`
 	console.log(filename)
-	Base64.fromBase64String(base64Image).toFile(`./static/uploads/${filename}`)
+
+  const filelocation = `./static/uploads/${filename}`
+  console.log(filelocation)
+	Base64.fromBase64String(base64Image).toFile(filelocation)
 	console.log('file saved')
+}
+
+export function validateTrackingNumber(trackingnumber: string) : void {
+  // throws errors for appropriate validation on tracking number
+  // check trackingNumber was provided
+  if(!trackingnumber) throw new Error("Tracking number was not provided")
+        
+  // check length
+  if(trackingnumber.length !== 24) throw new Error("Tracking number is not the correct length.");
+
 }

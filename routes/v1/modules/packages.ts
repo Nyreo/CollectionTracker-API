@@ -1,7 +1,7 @@
 import db from './db.ts'
 import { Bson } from "https://deno.land/x/mongo@v0.21.0/mod.ts";
 
-import { PackageSchema } from '../interfaces/db_interfaces.ts'
+import { PackageSchema, DeliveryDetailsSchema } from '../interfaces/db_interfaces.ts'
 
 const availableStatus = ['not-dispatched', 'in-transit', 'delivered']
 
@@ -39,8 +39,6 @@ export async function patchPackage(trackingNumber: Bson.ObjectId, status: string
   let setFields: Record<string, unknown> = {status}
   if(status === 'in-transit') {
     setFields = {...setFields, courier: username}
-  } else if(status === 'delivered') {
-    // infer stuff here
   }
 
   const { matchedCount, modifiedCount } = await packages.updateOne(

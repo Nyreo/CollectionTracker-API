@@ -1,14 +1,20 @@
 {
   "default" : {
+    "version": "1",
     "name": "Collection Tracker API",
-		"desc": "a simple API for providing controlling information on packages",
-		"links": [
-			{
-				"name": "accounts",
-				"desc": "a simple API for providing controlling information on packages",
-				"href": "/accounts"
-			}
-		],
+    "desc": "a simple API for providing controlling information on packages",
+    "links": [
+      {
+        "name": "accounts",
+        "desc": "controls the acccounts collection",
+        "href": "/accounts"
+      },
+      {
+        "name": "packages",
+        "desc": "controls the packages collection",
+        "href": "/packages"
+      }
+    ],
     "allows": "GET"
   },
   "accounts" : {
@@ -41,17 +47,18 @@
     },
     "links": [
       {
-        "name": "username",
+        "name": "<username>",
         "desc": "gets all packages for a specific user",
         "href": "/<username>"
-      },
-      {
-        "name": "trackingnumber",
-        "desc": "gets a specific package based on the tracking number",
-        "href": "/tracking"
       }
     ],
-    "allows": "GET, POST"
+    "queries": [
+      {
+        "name": "trackingnumber",
+        "desc": "queries the collection based on the tracking number"
+      }
+    ],
+    "allows": "GET, POST, PATCH"
   },
   "packages/<username>": {
     "name": "packages/<username>",
@@ -78,25 +85,5 @@
       }
     ],
     "allows": "GET"
-  },
-  "packages/tracking/<trackingnumber>": {
-    "name": "packages/tracking/<trackingnumber>",
-    "desc": "a specific package based on the tracking number",
-    "schema": {
-      "_id" : {
-        "pseudo": "trackingNumber",
-        "type:" : "string"
-      },
-      "courier" : "string",
-      "status" : "string",
-      "addTime" : "number",
-      "username" : "string",
-      "address" : "string",
-      "recpName" : "string",
-      "weight" : "number",
-      "destPostcode" : "string",
-      "sendPostcode" : "string"
-    },
-    "allows": "GET, PATCH"
   }
 }
