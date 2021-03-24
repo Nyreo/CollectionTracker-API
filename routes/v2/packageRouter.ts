@@ -1,9 +1,9 @@
 import { Router, Status, helpers } from 'https://deno.land/x/oak/mod.ts'
 import { Bson } from "https://deno.land/x/mongo@v0.21.0/mod.ts";
 
-import { getRequestInfo, verifyToken } from '../../modules/util.ts'
+import { getRequestInfo, verifyToken } from './modules/util.ts'
 
-import { getPackages, postPackage, patchPackage } from '../../modules/packages.ts';
+import { getPackages, postPackage, patchDeliverPackage, patchPickupPackage } from './modules/packages.ts';
 
 const withPackageRouter = (VERSION: string, router: Router) => {
 
@@ -160,8 +160,17 @@ const withPackageRouter = (VERSION: string, router: Router) => {
         // patch packages
         console.log(`-patching package status associated with trackingnumber: ${params.trackingnumber} to ${data.status}`)
         
-        const _package = await patchPackage(new Bson.ObjectId(params.trackingnumber), data.status, username);
+        let _package;
 
+        if(data.status === 'in-transit') {
+          _package = await patchPickupPackage(new Bson.ObjectId(params.trackingnumber), username);
+        } else if(data.status === 'delivered') {
+          // validate delivery details
+          if(!data.deliveryDetails) throw new Error("You have not provided any delivery details");
+          
+          _package = await patchDeliverPackage(new Bson.ObjectId(params.trackingnumber), username, data.deliveryDetails);
+        }
+        
         console.log('-responding')
         // set response status
         context.response.status = Status.OK

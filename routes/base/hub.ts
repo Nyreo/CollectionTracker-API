@@ -4,7 +4,7 @@
 
 import { Router, Status } from 'https://deno.land/x/oak/mod.ts'
 
-import { getRequestInfo } from '../../modules/util.ts'
+import { getRequestInfo } from './modules/util.ts'
 
 // version routers
 import withV1Router from '../v1/hub.ts'
