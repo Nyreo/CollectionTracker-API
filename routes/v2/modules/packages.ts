@@ -97,7 +97,7 @@ async function checkAlreadySelected(trackingNumber: Bson.ObjectId) {
 
   console.log(count)
 
-  if(count) throw new Error("A courier has already selected that package")
+  if(count) throw new Error("A courier has already selected that package or it has already been delivered.")
 }
 
 async function checkCourierAssignmenet(trackingNumber: Bson.ObjectId, username: string) {
@@ -111,5 +111,5 @@ async function checkCourierAssignmenet(trackingNumber: Bson.ObjectId, username: 
 
   console.log(count)
 
-  if(!count) throw new Error("That package has been selected by another courier.")
+  if(!count) throw new Error("That package has been selected by another courier or has already been delivered.")
 }

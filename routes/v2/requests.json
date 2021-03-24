@@ -20,7 +20,11 @@
   "accounts" : {
     "name": "accounts",
     "desc": "user accounts",
-    "schema": {
+    "request schema": {
+      "username": "string",
+      "password": "string"
+    },
+    "response schema": {
       "username": "string",
       "password": "string",
       "userType": "string"
@@ -30,7 +34,7 @@
   "packages" : {
     "name": "packages",
     "desc": "all requested packages",
-    "schema": {
+    "response data schema": {
       "_id" : {
         "pseudo": "trackingNumber",
         "type:" : "string"
@@ -55,6 +59,11 @@
         "name": "trackingnumber",
         "desc": "gets a specific package based on the tracking number",
         "href": "/tracking"
+      },
+      {
+        "name": "signatures",
+        "desc": "handles signatures collection",
+        "href": "/signatures"
       }
     ],
     "allows": "GET, POST"
@@ -62,7 +71,10 @@
   "packages/<username>": {
     "name": "packages/<username>",
     "desc": "all packages for a specific user",
-    "schema": {
+    "request schema": {
+      "username": "string"
+    },
+    "response schema": {
       "_id" : {
         "pseudo": "trackingNumber",
         "type:" : "string"
@@ -85,24 +97,13 @@
     ],
     "allows": "GET"
   },
-  "packages/tracking/<trackingnumber>": {
-    "name": "packages/tracking/<trackingnumber>",
-    "desc": "a specific package based on the tracking number",
-    "schema": {
-      "_id" : {
-        "pseudo": "trackingNumber",
-        "type:" : "string"
-      },
-      "courier" : "string",
-      "status" : "string",
-      "addTime" : "number",
-      "username" : "string",
-      "address" : "string",
-      "recpName" : "string",
-      "weight" : "number",
-      "destPostcode" : "string",
-      "sendPostcode" : "string"
+  "packages/signatures": {
+    "name" : "packages/signatures",
+    "desc" : "method for uploading images to the signature collection",
+    "request_schema": {
+      "signature64" : "string",
+      "trackingNumber": "string"
     },
-    "allows": "GET, PATCH"
+    "allows": "POST"
   }
 }
