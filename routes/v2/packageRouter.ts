@@ -32,11 +32,18 @@ const withPackageRouter = (VERSION: string, router: Router) => {
         if(!token) throw new Error('Invalid token')
         await verifyToken(token)
 
-        let filter = {}
+        const filter = {}
         // check if tracking number was provided
         if(params.trackingnumber) {
-          filter = {...filter, _id: new Bson.ObjectId(params.trackingnumber) }
+          validateTrackingNumber(params.trackingnumber); 
+          filter['_id'] = new Bson.ObjectId(params.trackingnumber);
         }
+
+        // check if username was passed
+        if(params.username) {
+          filter['username'] = params.username
+        }
+
         // get packages
         console.log('-getting packages')
         const packages = await getPackages(filter);
@@ -241,6 +248,44 @@ const withPackageRouter = (VERSION: string, router: Router) => {
           info,
           status: 'success',
           data: packages
+        }
+        context.response.body = JSON.stringify(msg, null, 2)
+    
+      } catch(err) {
+        // if error occured, set status to unauthorized, send message
+        context.response.status = Status.Unauthorized
+        const msg = {
+          info,
+          status: 'Unauthorized',
+          msg: 'This route requires Basic Access Authentication',
+          err: err.message
+        }
+        context.response.body = JSON.stringify(msg, null, 2)
+      }
+    })
+    // upload signature -- get info
+    .get(`${SUB_ROUTE}/signatures`, async context => {
+      // get host
+      const HOST = context.request.url.host
+
+      // check if user has passed authroize header
+      console.log('-fetching token')
+      const token = context.request.headers.get('Authorization')
+      console.log(`auth: ${token}`)
+    
+      // get info from file
+      console.log('-fetching info')
+      const info = getRequestInfo(VERSION, "packages/signatures", HOST)
+      context.response.headers.set('Allow', info.allows)
+    
+      try {
+        if(!token) throw new Error('Invalid token')
+        await verifyToken(token)
+
+        // create response msg
+        const msg = {
+          info,
+          status: 'success',
         }
         context.response.body = JSON.stringify(msg, null, 2)
     

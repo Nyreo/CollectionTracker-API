@@ -57,19 +57,22 @@
     },
     "links": [
       {
-        "name": "username",
+        "name": ":username",
         "desc": "gets all packages for a specific user",
         "href": "/<username>"
-      },
-      {
-        "name": "trackingnumber",
-        "desc": "gets a specific package based on the tracking number",
-        "href": "/tracking"
       },
       {
         "name": "signatures",
         "desc": "handles signatures collection",
         "href": "/signatures"
+      }
+    ],
+    "queries": [
+      {
+        "name": "trackingnumber",
+        "desc": "filters packages collection by tracking number",
+        "type": "string",
+        "required length" : 24
       }
     ],
     "allows": "GET, POST"
