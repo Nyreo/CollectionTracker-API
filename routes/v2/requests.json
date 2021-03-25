@@ -82,11 +82,11 @@
     "allows": "GET, POST"
   },
   "packages/signatures": {
-    "name" : "packages/:trackingnumber/signature",
-    "desc" : "method for uploading images for a given package",
+    "name" : "packages/signatures",
+    "desc" : "access to the signatures sub-collection owned by packages",
     "request_schema": {
       "signature64" : "string",
-      "trackingNumber": "string"
+      "trackingnumber": "string"
     },
     "allows": "POST"
   },

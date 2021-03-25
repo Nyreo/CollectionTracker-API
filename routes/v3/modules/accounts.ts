@@ -31,6 +31,27 @@ export async function login(credentials: loginConfig) {
   return {username: user.username, userType: user.userType};
 }
 
+export async function getUserList(userType: string) {
+  const filter = { userType } 
+
+  const accounts = db.collection<AccountSchema>("accounts");
+
+  //@ts-ignore //interface for built-in function does not include the option provided
+  const users = await accounts.find(filter, { noCursorTimeout:false })
+  const usersArr = await users.toArray()
+
+  const filteredUsers: string[] = []
+
+  if(usersArr.length > 0) {
+    usersArr.forEach(user => {
+      filteredUsers.push(user.username);
+    })
+
+    return filteredUsers;
+
+  } else throw new Error("No users of that type exist.");
+}
+
 export async function register(credentials: registerConfig) {
 	credentials.password = await hash(credentials.password, salt)
 	console.log(credentials)
