@@ -1,3 +1,122 @@
 {
-  "default": {}
+  "default" : {
+    "version": "3",
+    "name": "Collection Tracker API",
+    "desc": "a simple API for providing controlling information on packages",
+    "links": [
+      {
+        "name": "accounts",
+        "desc": "controls the acccounts collection",
+        "href": "/accounts"
+      },
+      {
+        "name": "packages",
+        "desc": "controls the packages collection",
+        "href": "/packages"
+      }
+    ],
+    "allows": "GET"
+  },
+  "accounts" : {
+    "name": "accounts",
+    "desc": "user accounts",
+    "request schema": {
+      "username": "string",
+      "password": "string"
+    },
+    "response schema": {
+      "username": "string",
+      "password": "string",
+      "userType": "string"
+    },
+    "allows": "GET, POST"
+  },
+  "packages" : {
+    "name": "packages",
+    "desc": "all requested packages",
+    "response schema": {
+      "_id" : {
+        "pseudo": "trackingNumber",
+        "type:" : "string"
+      },
+      "courier?" : "string",
+      "status" : "string",
+      "date" : "number",
+      "username" : "string",
+      "address" : "string",
+      "recpName" : "string",
+      "weight" : "number",
+      "destPostcode" : "string",
+      "sendPostcode" : "string",
+      "deliveryDetails": {
+        "time": "number",
+        "lat" : "number",
+        "lng" : "number",
+        "handedTo" : "string"
+      }
+    },
+    "links": [
+      {
+        "name": ":trackingnumber",
+        "desc": "isolates individual package based on tracking number",
+        "href": "/:trackingnumber"
+      },
+      {
+        "name": "signatures",
+        "desc": "provides access to the signature collection parented by packages",
+        "href": "/signatures"
+      }
+    ],
+    "queries": [
+      {
+        "name": "username",
+        "desc": "gets all packages for a given user",
+        "type": "string"
+      },
+      {
+        "name": "courier",
+        "desc": "determines whether or not the requesting user is a courier",
+        "type": "boolean"
+      }
+    ],
+    "allows": "GET, POST"
+  },
+  "packages/signatures": {
+    "name" : "packages/:trackingnumber/signature",
+    "desc" : "method for uploading images for a given package",
+    "request_schema": {
+      "signature64" : "string",
+      "trackingNumber": "string"
+    },
+    "allows": "POST"
+  },
+  "packages/:trackingnumber": {
+    "name": "packages/:trackingnumber",
+    "desc": "isolates individual package based on tracking number",
+    "request schema": {
+      "trackingnumber": "string"
+    },
+    "response schema": {
+      "_id" : {
+        "pseudo": "trackingNumber",
+        "type:" : "string"
+      },
+      "courier?" : "string",
+      "status" : "string",
+      "date" : "number",
+      "username" : "string",
+      "address" : "string",
+      "recpName" : "string",
+      "weight" : "number",
+      "destPostcode" : "string",
+      "sendPostcode" : "string",
+      "deliveryDetails?": {
+        "time": "number",
+        "lat" : "number",
+        "lng" : "number",
+        "handedTo" : "string"
+      }
+    },
+    "allows": "GET, PATCH"
+  }
 }

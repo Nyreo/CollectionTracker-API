@@ -9,6 +9,7 @@ import { getRequestInfo } from './modules/util.ts'
 // version routers
 import withV1Router from '../v1/hub.ts'
 import withV2Router from '../v2/hub.ts'
+import withV3Router from '../v3/hub.ts'
 
 const router: Router = new Router()
 
@@ -29,7 +30,7 @@ withV1Router(router)
 // v2
 withV2Router(router)
 // v3
-// withV3Router(router)
+withV3Router(router)
 
 // default route to 404 not found
 router.get(`/(.*)`, context => {     
