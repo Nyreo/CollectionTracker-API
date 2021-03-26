@@ -24,27 +24,12 @@
       "username": "string",
       "password": "string"
     },
-    "links": [
-      {
-        "name": "couriers",
-        "desc": "returns a list of all couriers",
-        "href": "/couriers"
-      }
-    ],
     "response schema": {
       "username": "string",
       "password": "string",
       "userType": "string"
     },
     "allows": "GET, POST"
-  },
-  "accounts/couriers": {
-    "name": "accounts/couriers",
-    "desc": "list of users who are couriers",
-    "response schema": {
-      "couriers": "string[]"
-    },
-    "allows": "GET"
   },
   "packages" : {
     "name": "packages",
@@ -92,6 +77,13 @@
         "name": "courier",
         "desc": "determines whether or not the requesting user is a courier",
         "type": "boolean"
+      },
+      {
+        "name": "status",
+        "default": "!delivered",
+        "available values": ["not-dispatched", "in-transit", "delivered", "any"],
+        "desc": "filters packages by current delivery status",
+        "type": "string"
       }
     ],
     "allows": "GET, POST"

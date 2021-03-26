@@ -24,13 +24,13 @@ router.get(`/`, context => {
 	context.response.body = JSON.stringify(data, null, 2)
 })
 
-
-// v1
-withV1Router(router)
-// v2
-withV2Router(router)
 // v3
 withV3Router(router)
+// v2
+withV2Router(router)
+// v1
+withV1Router(router)
+
 
 // default route to 404 not found
 router.get(`/(.*)`, context => {     
