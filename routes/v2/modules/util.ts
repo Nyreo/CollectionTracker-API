@@ -38,10 +38,13 @@ export function getRequestInfo(VERSION: string, request: string, host?: string):
 
   const versionLink = VERSION === 'v0' ? '/' : `/${VERSION}/`
 
+  if(request === 'default') request = ''
+  else request += '/'
+  
   // customise links to include host - if they exist
   if(info.links) {
     for(const link of info.links) {
-      link.href = `${host}${versionLink}${request}/${link.name}`;
+      link.href = `${host}${versionLink}${request}${link.name}`;
     }
   }
   return info;

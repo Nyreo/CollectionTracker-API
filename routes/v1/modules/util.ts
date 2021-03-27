@@ -36,6 +36,9 @@ export function getRequestInfo(VERSION: string, request: string, host?: string):
   // get base info
   const info: requestInfo = requests[VERSION][request];
 
+  if(request === 'default') request = ''
+  else request += '/'
+  
   // customise links to include host - if they exist
   if(info.links) {
     for(const link of info.links) {
