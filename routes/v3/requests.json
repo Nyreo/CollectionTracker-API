@@ -75,12 +75,13 @@
       },
       {
         "name": "courier",
+        "default": "false",
         "desc": "determines whether or not the requesting user is a courier",
         "type": "boolean"
       },
       {
         "name": "status",
-        "default": "!delivered",
+        "default": "not delivered",
         "available values": ["not-dispatched", "in-transit", "delivered", "any"],
         "desc": "filters packages by current delivery status",
         "type": "string"

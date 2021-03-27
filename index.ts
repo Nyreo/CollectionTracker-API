@@ -7,8 +7,6 @@ import "https://deno.land/x/dotenv/load.ts";
 
 // routers
 import baseRouter from './routes/base/hub.ts'
-import v1Router from './routes/v1/hub.ts'
-import v2Router from './routes/v2/hub.ts'
 
 const defaultPort = 8080
 const { args } = Deno
