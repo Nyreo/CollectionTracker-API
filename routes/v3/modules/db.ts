@@ -11,11 +11,6 @@ const passDB : string = Deno.env.get("DB_PASS") || '';
 
 const hostDB : string = Deno.env.get("DB_HOST") || '';
 
-console.log(baseDB)
-console.log(userDB)
-console.log(passDB)
-console.log(hostDB)
-
 await client.connect({
   db: baseDB,
   tls: true,
