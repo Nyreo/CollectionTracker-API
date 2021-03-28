@@ -1,36 +1,36 @@
 /* index.js */
-import { Application } from 'https://deno.land/x/oak/mod.ts'
-import { parse } from 'https://deno.land/std/flags/mod.ts'
+import { Application } from "https://deno.land/x/oak/mod.ts";
+import { parse } from "https://deno.land/std/flags/mod.ts";
 
 // dotenv
 import "https://deno.land/x/dotenv/load.ts";
 
 // routers
-import baseRouter from './routes/base/hub.ts'
+import baseRouter from "./routes/base/hub.ts";
 
-const defaultPort = 8080
-const { args } = Deno
-const argPort = parse(args).port
-const port = argPort ? Number(argPort) : defaultPort
+const defaultPort = 8080;
+const { args } = Deno;
+const argPort = parse(args).port;
+const port = argPort ? Number(argPort) : defaultPort;
 
-const app = new Application()
+const app = new Application();
 
 // error handler
 app.use(async (context, next) => {
-	try {
-		console.log(context.request.url.href)
-		context.response.headers.set('Content-Type', 'application/json')
-    
-		await next()
-	} catch (err) {
-		console.log(err)
-	}
-})
+  try {
+    console.log(context.request.url.href);
+    context.response.headers.set("Content-Type", "application/json");
+
+    await next();
+  } catch (err) {
+    console.log(err);
+  }
+});
 
 app.use((ctx, next) => {
-  ctx.response.headers.set('Access-Control-Allow-Origin', '*')
-  return next()
-})
+  ctx.response.headers.set("Access-Control-Allow-Origin", "*");
+  return next();
+});
 
 // Logger
 app.use(async (ctx, next) => {
@@ -48,8 +48,8 @@ app.use(async (ctx, next) => {
 });
 
 // routes -- includes all versioning routes
-app.use(baseRouter.routes())
-app.use(baseRouter.allowedMethods())
+app.use(baseRouter.routes());
+app.use(baseRouter.allowedMethods());
 
 // static content
 // app.use(async (context, next) => {
@@ -62,17 +62,17 @@ app.use(baseRouter.allowedMethods())
 // })
 
 // page not found
-app.use( context => {
-	try {
-		console.log('404 PAGE NOT FOUND')
-		context.response.body = { status: 'error', msg: 'page not found' }
-	} catch(err) {
-		console.error(err)
-	}
-})
+app.use((context) => {
+  try {
+    console.log("404 PAGE NOT FOUND");
+    context.response.body = { status: "error", msg: "page not found" };
+  } catch (err) {
+    console.error(err);
+  }
+});
 
-app.addEventListener('listen', ({ port }) => {
-	console.log(`listening on port: ${port}`)
-})
+app.addEventListener("listen", ({ port }) => {
+  console.log(`listening on port: ${port}`);
+});
 
-await app.listen({ port })
+await app.listen({ port });
