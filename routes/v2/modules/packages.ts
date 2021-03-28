@@ -32,7 +32,7 @@ export function postPackage(_package: PackageSchema) {
 export async function patchPickupPackage(
   trackingNumber: Bson.ObjectId,
   username: string,
-): Promise<PackageSchema> {
+): Promise<PackageSchema | undefined> {
   const packages = db.collection<PackageSchema>("packages");
   const status = "in-transit";
 
@@ -56,9 +56,9 @@ export async function patchPickupPackage(
   if (modifiedCount <= 0) throw new Error("No changes were made.");
 
   // return record
-  //@ts-ignore // does not include noCursorTimeout in interface
-  const _package: PackageSchema = await packages.findOne({
+  const _package: PackageSchema | undefined = await packages.findOne({
     _id: trackingNumber,
+    //@ts-ignore // does not include noCursorTimeout in interface
   }, { noCursorTimeout: false });
 
   return _package;
@@ -68,7 +68,7 @@ export async function patchDeliverPackage(
   trackingNumber: Bson.ObjectId,
   username: string,
   deliveryDetails: DeliveryDetailsSchema,
-): Promise<PackageSchema> {
+): Promise<PackageSchema | undefined> {
   const packages = db.collection<PackageSchema>("packages");
   const status = "delivered";
 
@@ -92,9 +92,9 @@ export async function patchDeliverPackage(
   if (modifiedCount <= 0) throw new Error("No changes were made.");
 
   // return record
-  //@ts-ignore // does not include noCursorTimeout in interface
-  const _package: PackageSchema = await packages.findOne({
+  const _package: PackageSchema | undefined = await packages.findOne({
     _id: trackingNumber,
+    //@ts-ignore // does not include noCursorTimeout in interface
   }, { noCursorTimeout: false });
 
   return _package;

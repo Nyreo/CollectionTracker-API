@@ -51,16 +51,6 @@ app.use(async (ctx, next) => {
 app.use(baseRouter.routes());
 app.use(baseRouter.allowedMethods());
 
-// static content
-// app.use(async (context, next) => {
-// 	const root = `${Deno.cwd()}/public`
-// 	try {
-// 		await context.send({ root })
-// 	} catch {
-// 		next()
-// 	}
-// })
-
 // page not found
 app.use((context) => {
   try {

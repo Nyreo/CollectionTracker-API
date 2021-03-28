@@ -33,7 +33,7 @@ export async function patchPackage(
   trackingNumber: Bson.ObjectId,
   status: string,
   username: string,
-): Promise<PackageSchema> {
+): Promise<PackageSchema | undefined> {
   const packages = db.collection<PackageSchema>("packages");
   status = status.toLowerCase();
 
@@ -60,9 +60,9 @@ export async function patchPackage(
   if (modifiedCount <= 0) throw new Error("No changes were made.");
 
   // return record
-  //@ts-ignore // does not include noCursorTimeout in interface
-  const _package: PackageSchema = await packages.findOne({
+  const _package: PackageSchema | undefined = await packages.findOne({
     _id: trackingNumber,
+    //@ts-ignore // does not include noCursorTimeout in interface
   }, { noCursorTimeout: false });
 
   return _package;

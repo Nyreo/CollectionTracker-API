@@ -1,6 +1,6 @@
 import { Router, Status } from "https://deno.land/x/oak/mod.ts";
 
-import { getUserList, register } from "./modules/accounts.ts";
+import { register } from "./modules/accounts.ts";
 import { getRequestInfo, verifyToken } from "./modules/util.ts";
 
 const withAccountRouter = (VERSION: string, router: Router) => {
