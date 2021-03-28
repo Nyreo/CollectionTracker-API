@@ -1,6 +1,7 @@
 /* index.js */
 import { Application } from "https://deno.land/x/oak/mod.ts";
 import { parse } from "https://deno.land/std/flags/mod.ts";
+import { oakCors } from "https://deno.land/x/cors/mod.ts";
 
 // dotenv
 import "https://deno.land/x/dotenv/load.ts";
@@ -27,10 +28,12 @@ app.use(async (context, next) => {
   }
 });
 
-app.use((ctx, next) => {
-  ctx.response.headers.set("Access-Control-Allow-Origin", "*");
-  return next();
-});
+// fix cors
+app.use(
+  oakCors({
+    origin: "*",
+  }),
+);
 
 // Logger
 app.use(async (ctx, next) => {
