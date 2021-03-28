@@ -12,7 +12,7 @@ fi
 # define the pass variable
 PASS=true
 
-echo "Starting linter..."
+echo "Starting file checker..."
 
 # for each file that has been staged
 for FILE in $STAGED_FILES
@@ -28,13 +28,24 @@ do
     echo "x-DENO_LINT Failed: $FILE"
     PASS=false
   fi
+
+  # check the format of the current file
+  deno fmt "$FILE" --check
+
+  # repeat the same previous check but this fime for the format checker
+  if [[ "$?" == 0 ]]; then
+    echo "o-DENO_FMT Passed: $FILE"
+  else
+    echo "x-DENO_FMT Failed: $FILE"
+    PASS=false
+  fi 
 done
 
-echo "Linter complete."
+echo "File check complete."
 
 # depending on if the linter failed, exit on corresponding code
 if ! $PASS; then
-  echo "The commit has failed. You must pass the linter validation before being able to commit. Please see the above message(s) for details."
+  echo "The commit has failed. You must pass the file validation (linter, format) before being able to commit. Please see the above message(s) for details."
   exit 1
 else
   echo "COMMIT SUCCEEDED"

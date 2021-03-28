@@ -1,25 +1,25 @@
 export interface loginConfig {
-	username: string
-	password: string
+  username: string;
+  password: string;
 }
 
 export interface registerConfig {
-	username: string
-	password: string
-	password2?: string
+  username: string;
+  password: string;
+  password2?: string;
 }
 
 export interface requestInfo {
-  name: string
-  desc : string
-  schema? : Record<string, unknown>
-  links? : requestLinks[]
-  queries? : string
-  allows : string
+  name: string;
+  desc: string;
+  schema?: Record<string, unknown>;
+  links?: requestLinks[];
+  queries?: string;
+  allows: string;
 }
 
 export interface requestLinks {
-  name: string
-  desc: string
-  href: string
+  name: string;
+  desc: string;
+  href: string;
 }

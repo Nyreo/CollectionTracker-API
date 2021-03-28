@@ -1,5 +1,5 @@
 {
-  "default" : {
+  "default": {
     "version": "2",
     "name": "Collection Tracker API",
     "desc": "a simple API for providing controlling information on packages",
@@ -17,7 +17,7 @@
     ],
     "allows": "GET"
   },
-  "accounts" : {
+  "accounts": {
     "name": "accounts",
     "desc": "user accounts",
     "request schema": {
@@ -31,28 +31,28 @@
     },
     "allows": "GET, POST"
   },
-  "packages" : {
+  "packages": {
     "name": "packages",
     "desc": "all requested packages",
     "response schema": {
-      "_id" : {
+      "_id": {
         "pseudo": "trackingNumber",
-        "type:" : "string"
+        "type:": "string"
       },
-      "courier?" : "string",
-      "status" : "string",
-      "date" : "number",
-      "username" : "string",
-      "address" : "string",
-      "recpName" : "string",
-      "weight" : "number",
-      "destPostcode" : "string",
-      "sendPostcode" : "string",
+      "courier?": "string",
+      "status": "string",
+      "date": "number",
+      "username": "string",
+      "address": "string",
+      "recpName": "string",
+      "weight": "number",
+      "destPostcode": "string",
+      "sendPostcode": "string",
       "deliveryDetails": {
         "time": "number",
-        "lat" : "number",
-        "lng" : "number",
-        "handedTo" : "string"
+        "lat": "number",
+        "lng": "number",
+        "handedTo": "string"
       }
     },
     "links": [
@@ -82,10 +82,10 @@
     "allows": "GET, POST"
   },
   "packages/signatures": {
-    "name" : "packages/signatures",
-    "desc" : "access to the signatures sub-collection owned by packages",
+    "name": "packages/signatures",
+    "desc": "access to the signatures sub-collection owned by packages",
     "request_schema": {
-      "signature64" : "string",
+      "signature64": "string",
       "trackingnumber": "string"
     },
     "allows": "POST"
@@ -97,24 +97,24 @@
       "trackingnumber": "string"
     },
     "response schema": {
-      "_id" : {
+      "_id": {
         "pseudo": "trackingNumber",
-        "type:" : "string"
+        "type:": "string"
       },
-      "courier?" : "string",
-      "status" : "string",
-      "date" : "number",
-      "username" : "string",
-      "address" : "string",
-      "recpName" : "string",
-      "weight" : "number",
-      "destPostcode" : "string",
-      "sendPostcode" : "string",
+      "courier?": "string",
+      "status": "string",
+      "date": "number",
+      "username": "string",
+      "address": "string",
+      "recpName": "string",
+      "weight": "number",
+      "destPostcode": "string",
+      "sendPostcode": "string",
       "deliveryDetails?": {
         "time": "number",
-        "lat" : "number",
-        "lng" : "number",
-        "handedTo" : "string"
+        "lat": "number",
+        "lng": "number",
+        "handedTo": "string"
       }
     },
     "allows": "GET, PATCH"
