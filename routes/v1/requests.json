@@ -22,7 +22,6 @@
     "desc": "user accounts",
     "schema": {
       "username": "string",
-      "password": "string",
       "userType": "string"
     },
     "allows": "GET, POST"
