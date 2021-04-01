@@ -3,11 +3,16 @@ import { Application } from "https://deno.land/x/oak/mod.ts";
 import { parse } from "https://deno.land/std/flags/mod.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
 
+import { ensureDir } from "https://deno.land/std@0.91.0/fs/mod.ts";
+
 // dotenv
 import "https://deno.land/x/dotenv/load.ts";
 
 // routers
 import baseRouter from "./routes/base/hub.ts";
+
+// ensure necessary static files exist -- creates if not
+ensureDir("./static/uploads");
 
 const defaultPort = 8080;
 const { args } = Deno;
