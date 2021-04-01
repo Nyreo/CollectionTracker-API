@@ -1,3 +1,134 @@
 {
-  "default": {}
+  "default": {
+    "version": "3",
+    "name": "Collection Tracker API",
+    "desc": "a simple API for providing controlling information on packages",
+    "links": [
+      {
+        "name": "accounts",
+        "desc": "controls the acccounts collection",
+        "href": "/accounts"
+      },
+      {
+        "name": "packages",
+        "desc": "controls the packages collection",
+        "href": "/packages"
+      }
+    ],
+    "allows": "GET"
+  },
+  "accounts": {
+    "name": "accounts",
+    "desc": "user accounts",
+    "request schema": {
+      "username": "string",
+      "password": "string"
+    },
+    "response schema": {
+      "username": "string",
+      "userType": "string"
+    },
+    "allows": "GET, POST"
+  },
+  "packages": {
+    "name": "packages",
+    "desc": "all requested packages",
+    "response schema": {
+      "_id": {
+        "pseudo": "trackingNumber",
+        "type:": "string"
+      },
+      "courier?": "string",
+      "status": "string",
+      "date": "number",
+      "username": "string",
+      "address": "string",
+      "recpName": "string",
+      "weight": "number",
+      "destPostcode": "string",
+      "sendPostcode": "string",
+      "deliveryDetails": {
+        "time": "number",
+        "lat": "number",
+        "lng": "number",
+        "handedTo": "string"
+      }
+    },
+    "links": [
+      {
+        "name": ":trackingnumber",
+        "desc": "isolates individual package based on tracking number",
+        "href": "/:trackingnumber"
+      },
+      {
+        "name": "signatures",
+        "desc": "provides access to the signature collection parented by packages",
+        "href": "/signatures"
+      }
+    ],
+    "queries": [
+      {
+        "name": "username",
+        "desc": "gets all packages for a given user",
+        "type": "string"
+      },
+      {
+        "name": "courier",
+        "default": "false",
+        "desc": "determines whether or not the requesting user is a courier",
+        "type": "boolean"
+      },
+      {
+        "name": "status",
+        "default": "not delivered",
+        "available values": [
+          "not-dispatched",
+          "in-transit",
+          "delivered",
+          "any"
+        ],
+        "desc": "filters packages by current delivery status",
+        "type": "string"
+      }
+    ],
+    "allows": "GET, POST"
+  },
+  "packages/signatures": {
+    "name": "packages/signatures",
+    "desc": "access to the signatures sub-collection owned by packages",
+    "request_schema": {
+      "signature64": "string",
+      "trackingnumber": "string"
+    },
+    "allows": "POST"
+  },
+  "packages/:trackingnumber": {
+    "name": "packages/:trackingnumber",
+    "desc": "isolates individual package based on tracking number",
+    "request schema": {
+      "trackingnumber": "string"
+    },
+    "response schema": {
+      "_id": {
+        "pseudo": "trackingNumber",
+        "type:": "string"
+      },
+      "courier?": "string",
+      "status": "string",
+      "date": "number",
+      "username": "string",
+      "address": "string",
+      "recpName": "string",
+      "weight": "number",
+      "destPostcode": "string",
+      "sendPostcode": "string",
+      "deliveryDetails?": {
+        "time": "number",
+        "lat": "number",
+        "lng": "number",
+        "handedTo": "string"
+      }
+    },
+    "allows": "GET, PATCH"
+  }
 }

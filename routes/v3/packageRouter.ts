@@ -26,6 +26,7 @@ const withPackageRouter = (VERSION: string, router: Router) => {
       // get optional params
       console.log("-getting parms");
       const params = helpers.getQuery(context, { mergeParams: true });
+      console.log(params);
       // check if user has passed authroize header
       console.log("-fetching token");
       const token = context.request.headers.get("Authorization");
@@ -45,12 +46,11 @@ const withPackageRouter = (VERSION: string, router: Router) => {
 
         if (params.courier && params.courier.toLowerCase() === "true") {
           filter.courier = params.username;
-          filter.status = {
-            $ne: "delivered",
-          };
-        } else filter["username"] = params.username;
 
-        console.log(filter);
+          if (params.status) {
+            if (params.status !== "any") filter.status = params.status;
+          } else filter.status = { $ne: "delivered" };
+        } else filter["username"] = params.username;
 
         // get packages
         console.log("-getting packages");

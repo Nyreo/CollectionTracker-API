@@ -18,6 +18,29 @@ export async function getPackages(filter?: Record<string, unknown>) {
   return await packageList.toArray();
 }
 
+// export async function getCourierPackages(couriers: string[], status: string) {
+
+//   const packages = db.collection<PackageSchema>("packages");
+
+//   const filter: Record<string, unknown> = {}
+
+//   if(status !== 'any') {
+//     filter.status = status
+//   }
+
+//   const packageCourierList = couriers.map(async courier => {
+//     const courierFilter = {...filter, courier}
+
+//     //@ts-ignore // does not include noCursorTimeout in interface
+//     const data = await packages.find(courierFilter, { noCursorTimeout:false })
+//     const dataArr = await data.toArray();
+
+//     return { courier, dataArr }
+//   })
+
+//   return packageCourierList;
+// }
+
 export function postPackage(_package: PackageSchema) {
   const packages = db.collection<PackageSchema>("packages");
 

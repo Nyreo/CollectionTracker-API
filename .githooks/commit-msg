@@ -1,18 +1,24 @@
 #!/bin/sh
 
+# name of develop branch - commits are only checked when pushing directly to develop
 develop_branch="develop"
+# get the current branch by reverse parsing the head commit (Recent)
 current_branch="$(git rev-parse --abbrev-ref HEAD)"
 
-# only check commit messages on main development branch
+# exit if current branch is not develop
 [ "$current_branch" != "$develop_branch" ] && exit 0
 
 # regex to validate in commit msg
 # if commiting to develop branch, must give:
-  # highlight of issue
+  # description of the issue
   # solution for the issue
 commit_regex='(issue:\s.+\s-\ssolution:\s.+)|merge'
+
+# the error message to be shown if commit fails
 error_msg="Aborting commit. When pushing to develop, you must include the issue found and your implemented solution. (issue: [issue desc.] - solution: [solution desc.]"
 
+# use grep and reqgular expressions to evaluate the commit message passed
+# if message does not match regular expression, exit with code 1
 if ! grep -iqE "$commit_regex" "$1"; then
     echo "$error_msg" >&2
     exit 1
